@@ -378,10 +378,14 @@ async function loadDailyData() {
       if (!m) continue;
       const year=m[1], mon=m[2].padStart(2,'0'), day=m[3].padStart(2,'0');
       const label=`${mon}-${day}`;
-      const val=pn(row[5]); // F열
-      if (!val) continue;
-      if (year==='2026'){ labels26.push(label); vals26.push(val); }
-      else if (year==='2025'){ labels25.push(label); vals25.push(val); }
+      const val26=pn(row[5]); // F열: 26년 일간 합계
+      const val25=pn(row[6]); // G열: 전년동일 (25년)
+      if (!val26) continue;
+      if (year==='2026'){
+        labels26.push(label);
+        vals26.push(val26);
+        vals25.push(val25); // G열에서 직접 25년 데이터 취득
+      }
     }
     if (labels26.length > 0) {
       DAILY_LABELS=labels26; DAILY_VALS_26=vals26; DAILY_VALS_25=vals25;
@@ -679,7 +683,7 @@ function renderTrendChart(gran){
       d25=T25.map((v,i)=>+(v/DAYS[i]/1e6).toFixed(2));
     }
     title='📈 일자별 매출 추이';
-    sub='26년 일간 매출';
+    sub='25년 · 26년 일간 매출 비교';
   } else {
     labels=MONTHS;
     d25=T25.map(v=>+(v/1e6).toFixed(1));
