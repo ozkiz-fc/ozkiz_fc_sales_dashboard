@@ -631,11 +631,30 @@ function renderCumulativeChart(canvasId){
   });
 }
 
-function renderTrendChart(){
+function renderTrendChart(gran){
   if(charts['canvas-trend']){charts['canvas-trend'].destroy();delete charts['canvas-trend'];}
-  const labels=MONTHS;
-  const d25=T25.map(v=>+(v/1e6).toFixed(1));
-  const d26=MONTHS.map((_,i)=>i<T26.length?+(T26[i]/1e6).toFixed(1):null);
+  let labels, d25, d26, title, sub;
+  if(gran==='weekly'){
+    labels=WK_LABELS;
+    d26=WK_T26.map(v=>+(v/1e6).toFixed(1));
+    d25=WK_T25.map(v=>+(v/1e6).toFixed(1));
+    title='📈 주별 매출 추이';
+    sub='25년 · 26년 비교';
+  } else if(gran==='daily'){
+    labels=MONTHS;
+    d25=T25.map((v,i)=>+(v/DAYS[i]/1e6).toFixed(2));
+    d26=MONTHS.map((_,i)=>i<T26.length?+(T26[i]/DAYS[i]/1e6).toFixed(2):null);
+    title='📈 일자별 매출 추이';
+    sub='25년 · 26년 월별 일평균';
+  } else {
+    labels=MONTHS;
+    d25=T25.map(v=>+(v/1e6).toFixed(1));
+    d26=MONTHS.map((_,i)=>i<T26.length?+(T26[i]/1e6).toFixed(1):null);
+    title='📈 월별 매출 추이';
+    sub='25년 · 26년 비교';
+  }
+  document.querySelector('.trend-title').textContent=title;
+  document.querySelector('.trend-sub').textContent=sub;
   const ctx=document.getElementById('canvas-trend').getContext('2d');
   charts['canvas-trend']=new Chart(ctx,{
     type:'line',
@@ -648,7 +667,7 @@ function renderTrendChart(){
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{labels:{color:'#64748b',font:{size:12}}},
-        tooltip:{callbacks:{label(c){return c.parsed.y!==null?` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}M`:null;}}}
+        tooltip:{callbacks:{label(c){return c.parsed.y!==null?` ${c.dataset.label}: ${c.parsed.y.toFixed(2)}M`:null;}}}
       },
       scales:{
         x:{ticks:{color:'#64748b'},grid:{color:'#e2e8f0'}},
@@ -661,7 +680,7 @@ function renderTrendChart(){
 function renderTotal(){
   const{gran,disp}=state.total;
   renderCards('cards-total',T26,T25);
-  renderTrendChart();
+  renderTrendChart(gran);
   const showTable=disp==='table';
   document.getElementById('table-total').classList.toggle('hidden',!showTable);
   document.getElementById('chart-total').classList.toggle('hidden',showTable);
