@@ -7,55 +7,131 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Malgun Gothic','Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
-header{background:#1e293b;border-bottom:1px solid #334155;padding:14px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-header h1{font-size:17px;font-weight:700;color:#f1f5f9;white-space:nowrap}
-header h1 span{color:#38bdf8}
-.main-tabs{display:flex;gap:4px;background:#0f172a;border-radius:8px;padding:4px}
-.main-tab{padding:6px 18px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;color:#94a3b8;background:transparent;font-family:inherit}
-.main-tab.active{background:#38bdf8;color:#0f172a}
-.main-tab:hover:not(.active){background:#1e293b;color:#e2e8f0}
-.controls-bar{padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #1e293b;background:#0f172a}
-.store-select{background:#1e293b;border:1px solid #334155;border-radius:6px;padding:6px 12px;color:#e2e8f0;font-size:13px;min-width:210px;cursor:pointer;font-family:inherit}
-.store-select:focus{outline:none;border-color:#38bdf8}
-.btn-group{display:flex;gap:2px;background:#1e293b;border-radius:6px;padding:3px}
-.btn-group button{padding:4px 12px;border-radius:4px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;color:#94a3b8;background:transparent;font-family:inherit}
-.btn-group button.active{background:#38bdf8;color:#0f172a}
-.btn-group button:hover:not(.active){background:#334155;color:#e2e8f0}
-.note-tag{font-size:11px;color:#64748b;padding:3px 8px;background:#1e293b;border-radius:4px;border:1px solid #334155;margin-left:auto}
+body{font-family:'Malgun Gothic','Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+
+/* ── 앱 레이아웃 ── */
+.app-layout{display:flex;min-height:100vh}
+
+/* ── 사이드바 ── */
+.sidebar{
+  width:200px;min-width:200px;
+  background:#ffffff;
+  border-right:1px solid #e2e8f0;
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;
+  overflow-y:auto;flex-shrink:0;
+  box-shadow:1px 0 8px #0000000a;
+}
+.sidebar-logo{
+  padding:20px 16px 18px;
+  border-bottom:1px solid #e2e8f0;
+}
+.sidebar-logo-img{width:28px;height:28px;object-fit:cover;object-position:center;border-radius:6px;display:block;margin-bottom:8px}
+.sidebar-logo-text{display:contents}
+.sidebar-logo .logo-title{font-size:14px;font-weight:700;color:#1e293b;line-height:1.4}
+.sidebar-logo .logo-title span{color:#3b82f6}
+.sidebar-nav{padding:12px 8px;flex:1}
+.nav-section-label{
+  font-size:10px;font-weight:600;color:#94a3b8;
+  text-transform:uppercase;letter-spacing:.8px;
+  padding:12px 12px 4px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-radius:8px;
+  cursor:pointer;font-size:13px;font-weight:500;
+  color:#64748b;border:none;background:transparent;
+  width:100%;text-align:left;
+  transition:all .15s;font-family:inherit;
+}
+.nav-item:hover:not(.active){background:#f8fafc;color:#1e293b}
+.nav-item.active{background:#eff6ff;color:#3b82f6;font-weight:600}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.sidebar-footer{
+  padding:14px 16px;
+  border-top:1px solid #e2e8f0;
+  font-size:11px;color:#94a3b8;
+  line-height:1.6;
+}
+
+/* ── 메인 컨텐츠 ── */
+.main-content{flex:1;min-width:0;display:flex;flex-direction:column}
+
+/* ── 컨트롤바 ── */
+.controls-bar{padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #e2e8f0;background:#ffffff}
+.store-select{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 12px;color:#1e293b;font-size:13px;min-width:210px;cursor:pointer;font-family:inherit}
+.store-select:focus{outline:none;border-color:#3b82f6}
+.btn-group{display:flex;gap:2px;background:#f1f5f9;border-radius:6px;padding:3px}
+.btn-group button{padding:4px 12px;border-radius:4px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;color:#64748b;background:transparent;font-family:inherit}
+.btn-group button.active{background:#3b82f6;color:#ffffff}
+.btn-group button:hover:not(.active){background:#e2e8f0;color:#1e293b}
+.note-tag{font-size:11px;color:#94a3b8;padding:3px 8px;background:#f8fafc;border-radius:4px;border:1px solid #e2e8f0;margin-left:auto}
+
+/* ── 카드 ── */
 .summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:10px;padding:14px 24px}
-.card{background:#1e293b;border-radius:10px;padding:14px 16px;border:1px solid #334155}
-.card-label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
-.card-value{font-size:21px;font-weight:700;color:#f1f5f9;margin-bottom:3px}
-.card-sub{font-size:11px;color:#64748b}
-.growth-up{color:#22d3ee}
-.growth-down{color:#f87171}
-.growth-flat{color:#94a3b8}
+.card{background:#ffffff;border-radius:10px;padding:14px 16px;border:1px solid #e2e8f0;border-top:3px solid #e2e8f0;transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 20px #0000001a}
+.card-label{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+.card-value{font-size:21px;font-weight:700;color:#1e293b;margin-bottom:3px}
+.card-sub{font-size:11px;color:#94a3b8}
+.card-blue{border-top-color:#3b82f6}.card-blue .card-value{color:#3b82f6}
+.card-green{border-top-color:#22c55e}.card-green .card-value{color:#22c55e}
+.card-purple{border-top-color:#a855f7}.card-purple .card-value{color:#a855f7}
+.card-orange{border-top-color:#f97316}.card-orange .card-value{color:#f97316}
+.growth-up{color:#16a34a}
+.growth-down{color:#dc2626}
+.growth-flat{color:#64748b}
+
+/* ── 트렌드 차트 ── */
+.trend-section{margin:0 24px 14px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:16px 20px}
+.trend-header{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.trend-title{font-size:14px;font-weight:600;color:#1e293b}
+.trend-sub{font-size:12px;color:#94a3b8}
+#canvas-trend{max-height:260px}
+
+/* ── 테이블 ── */
 .content-area{padding:14px 24px}
-.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #334155}
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #e2e8f0}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead tr{background:#1e293b}
-th{padding:9px 14px;text-align:right;font-weight:600;color:#94a3b8;font-size:11px;white-space:nowrap;border-bottom:1px solid #334155}
+thead tr{background:#f8fafc}
+th{padding:9px 14px;text-align:right;font-weight:600;color:#64748b;font-size:11px;white-space:nowrap;border-bottom:1px solid #e2e8f0}
 th:first-child{text-align:left}
-td{padding:8px 14px;text-align:right;border-bottom:1px solid #1e293b;color:#e2e8f0;white-space:nowrap}
-td:first-child{text-align:left;color:#94a3b8;font-weight:500}
+td{padding:8px 14px;text-align:right;border-bottom:1px solid #f1f5f9;color:#1e293b;white-space:nowrap}
+td:first-child{text-align:left;color:#64748b;font-weight:500}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:#ffffff08}
+tr:hover td{background:#f8fafc}
 .td-growth{font-weight:700;font-size:12px}
-.td-total td{background:#1e293b90;font-weight:700;color:#f1f5f9;border-top:1px solid #334155}
-.td-total td:first-child{color:#38bdf8}
-.chart-wrap{background:#1e293b;border-radius:10px;border:1px solid #334155;padding:16px}
+.td-total td{background:#f1f5f9;font-weight:700;color:#1e293b;border-top:1px solid #e2e8f0}
+.td-total td:first-child{color:#3b82f6}
+
+/* ── 차트 ── */
+.chart-wrap{background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:16px}
 .chart-wrap canvas{max-height:380px}
-.partial-badge{display:inline-block;font-size:10px;padding:1px 5px;background:#7c3aed20;color:#a78bfa;border:1px solid #7c3aed40;border-radius:3px;margin-left:4px;vertical-align:middle}
-.excl-badge{display:inline-block;font-size:10px;padding:1px 5px;background:#ef444420;color:#fca5a5;border:1px solid #ef444430;border-radius:3px;margin-left:4px;vertical-align:middle}
+
+/* ── 배지 ── */
+.partial-badge{display:inline-block;font-size:10px;padding:1px 5px;background:#7c3aed15;color:#7c3aed;border:1px solid #7c3aed30;border-radius:3px;margin-left:4px;vertical-align:middle}
+.excl-badge{display:inline-block;font-size:10px;padding:1px 5px;background:#ef444415;color:#dc2626;border:1px solid #ef444430;border-radius:3px;margin-left:4px;vertical-align:middle}
 .section{display:none}
 .section.active{display:block}
 .hidden{display:none!important}
-.divider{width:1px;height:18px;background:#334155}
-#loading{position:fixed;inset:0;background:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
-#loading p{color:#64748b;font-size:13px}
-.spinner{width:36px;height:36px;border:3px solid #334155;border-top-color:#38bdf8;border-radius:50%;animation:spin .8s linear infinite}
+.divider{width:1px;height:18px;background:#e2e8f0}
+
+/* ── 로딩 ── */
+#loading{position:fixed;inset:0;background:#f1f5f9;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
+#loading p{color:#94a3b8;font-size:13px}
+.spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── 반응형 ── */
+@media(max-width:768px){
+  .app-layout{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap}
+  .sidebar-logo{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:none;border-right:1px solid #e2e8f0}
+  .sidebar-logo .logo-icon{margin-bottom:0;font-size:18px}
+  .sidebar-nav{display:flex;flex-direction:row;padding:6px 8px;gap:4px}
+  .nav-section-label{display:none}
+  .sidebar-footer{display:none}
+}
 @media(max-width:640px){.summary-cards{grid-template-columns:1fr 1fr}.note-tag{margin-left:0}}
 </style>
 </head>
@@ -63,74 +139,98 @@ tr:hover td{background:#ffffff08}
 
 <div id="loading"><div class="spinner"></div><p>데이터 불러오는 중...</p></div>
 
-<header>
-  <h1>🧸 오즈키즈 FC <span>매출 대시보드</span></h1>
-  <div class="main-tabs">
-    <button class="main-tab active" onclick="switchMain('total')">전체 매장</button>
-    <button class="main-tab" onclick="switchMain('store')">매장별</button>
-  </div>
-</header>
+<div class="app-layout">
 
-<!-- ▸ TOTAL SECTION -->
-<div id="sec-total" class="section active">
-  <div class="controls-bar">
-    <div class="btn-group" id="gran-total">
-      <button class="active" onclick="setGran('total','cumulative')">누적</button>
-      <button onclick="setGran('total','monthly')">월별</button>
-      <button onclick="setGran('total','weekly')">주차별</button>
-      <button onclick="setGran('total','daily')">일별</button>
+  <!-- ▸ 사이드바 -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img class="sidebar-logo-img" src="https://wimg.sedaily.com/news/legacy/2024/08/26/2DD6243ZX6_1.png" alt="오즈키즈 FC">
+      <div class="sidebar-logo-text">
+        <div class="logo-title">오즈키즈 FC<br><span>매출 대시보드</span></div>
+      </div>
     </div>
-    <div class="divider"></div>
-    <div class="btn-group" id="disp-total">
-      <button class="active" onclick="setDisp('total','table')">📋 표</button>
-      <button onclick="setDisp('total','chart')">📊 그래프</button>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">메인</div>
+      <button class="nav-item active" id="nav-total" onclick="switchMain('total')">
+        <span class="nav-icon">🏠</span>전체 매장
+      </button>
+      <button class="nav-item" id="nav-store" onclick="switchMain('store')">
+        <span class="nav-icon">🏪</span>매장별
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      온라인 매출 제외<br>
+      Google Sheets 연동
     </div>
-    <span class="note-tag" id="note-total">온라인 제외 · 집계중</span>
-  </div>
-  <div class="summary-cards" id="cards-total"></div>
-  <div class="content-area">
-    <div id="table-total" class="table-wrap"></div>
-    <div id="chart-total" class="chart-wrap hidden"><canvas id="canvas-total"></canvas></div>
-  </div>
-</div>
+  </aside>
 
-<!-- ▸ STORE SECTION -->
-<div id="sec-store" class="section">
-  <div class="controls-bar">
-    <select class="store-select" id="store-select" onchange="onStoreChange()"></select>
-    <div class="divider"></div>
-    <div class="btn-group" id="gran-store">
-      <button class="active" onclick="setGran('store','cumulative')">누적</button>
-      <button onclick="setGran('store','monthly')">월별</button>
-      <button onclick="setGran('store','weekly')">주차별</button>
-      <button onclick="setGran('store','daily')">일별</button>
+  <!-- ▸ 메인 컨텐츠 -->
+  <div class="main-content">
+
+    <!-- ▸ TOTAL SECTION -->
+    <div id="sec-total" class="section active">
+      <div class="controls-bar">
+        <div class="btn-group" id="gran-total">
+          <button class="active" onclick="setGran('total','cumulative')">누적</button>
+          <button onclick="setGran('total','monthly')">월별</button>
+          <button onclick="setGran('total','weekly')">주차별</button>
+          <button onclick="setGran('total','daily')">일별</button>
+        </div>
+        <div class="divider"></div>
+        <div class="btn-group" id="disp-total">
+          <button class="active" onclick="setDisp('total','table')">📋 표</button>
+          <button onclick="setDisp('total','chart')">📊 그래프</button>
+        </div>
+        <span class="note-tag" id="note-total">온라인 제외 · 집계중</span>
+      </div>
+      <div class="summary-cards" id="cards-total"></div>
+      <div class="trend-section">
+        <div class="trend-header">
+          <span class="trend-title">📈 월별 매출 추이</span>
+          <span class="trend-sub">25년 · 26년 비교</span>
+        </div>
+        <canvas id="canvas-trend"></canvas>
+      </div>
+      <div class="content-area">
+        <div id="table-total" class="table-wrap"></div>
+        <div id="chart-total" class="chart-wrap hidden"><canvas id="canvas-total"></canvas></div>
+      </div>
     </div>
-    <div class="divider"></div>
-    <div class="btn-group" id="disp-store">
-      <button class="active" onclick="setDisp('store','table')">📋 표</button>
-      <button onclick="setDisp('store','chart')">📊 그래프</button>
+
+    <!-- ▸ STORE SECTION -->
+    <div id="sec-store" class="section">
+      <div class="controls-bar">
+        <select class="store-select" id="store-select" onchange="onStoreChange()"></select>
+        <div class="divider"></div>
+        <div class="btn-group" id="gran-store">
+          <button class="active" onclick="setGran('store','cumulative')">누적</button>
+          <button onclick="setGran('store','monthly')">월별</button>
+          <button onclick="setGran('store','weekly')">주차별</button>
+          <button onclick="setGran('store','daily')">일별</button>
+        </div>
+        <div class="divider"></div>
+        <div class="btn-group" id="disp-store">
+          <button class="active" onclick="setDisp('store','table')">📋 표</button>
+          <button onclick="setDisp('store','chart')">📊 그래프</button>
+        </div>
+        <span class="note-tag" id="note-store">집계중</span>
+      </div>
+      <div class="summary-cards" id="cards-store"></div>
+      <div class="content-area">
+        <div id="table-store" class="table-wrap"></div>
+        <div id="chart-store" class="chart-wrap hidden"><canvas id="canvas-store"></canvas></div>
+      </div>
     </div>
-    <span class="note-tag" id="note-store">집계중</span>
-  </div>
-  <div class="summary-cards" id="cards-store"></div>
-  <div class="content-area">
-    <div id="table-store" class="table-wrap"></div>
-    <div id="chart-store" class="chart-wrap hidden"><canvas id="canvas-store"></canvas></div>
-  </div>
-</div>
+
+  </div><!-- /.main-content -->
+</div><!-- /.app-layout -->
 
 <script>
-// ═══════════════════════════════════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════════════════════════════════
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const DAYS   = [31,28,31,30,31,30,31,31,30,31,30,31];
 const SHEET_ID = '1y3G2qm-743LvJXngpSeXfUptSSiS5rXBagky_ahq92M';
-// 완전히 숨길 매장명 목록
 const HIDDEN_STORES = ['(신)의정부온라인(SSG)', '평촌(온)', '전주', '(롯)센텀', '링크맘', '(롯)서면'];
 
-// ── 주차별 실데이터 (이름 기반 맵) ───────────────────────────────
-// Google Sheets의 "주차별" 시트가 있으면 loadData()에서 자동 업데이트됨
 let WK_LABELS = ['12월5주','1월1주','1월2주','1월3주','1월4주','2월1주','2월2주','2월3주','2월4주','3월1주','3월2주','3월3주','3월4주','4월1주','4월2주'];
 let WK_T26 = [10210455,60973127,54415595,48372109,42967691,48385945,61072900,102812909,92965564,129165200,80631174,74871736,79739882,79353200,79446409];
 let WK_T25 = [5563455,39269173,38582818,43479900,60306545,38047364,37825182,56300545,90795791,106679073,78806200,72544482,64488445,62765716,61770909];
@@ -159,30 +259,25 @@ let WK_BY_NAME = {
   '창원':          {s26:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s25:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
 };
 
-// ═══════════════════════════════════════════════════════════════════
-// DYNAMIC DATA (populated by loadData())
-// ═══════════════════════════════════════════════════════════════════
 let STORES = [], T25 = [], T26 = [], S25 = {}, S26 = {};
 
 function parseCSV(text) {
-  // BOM 제거
-  text = text.replace(/^\uFEFF/, '');
+  text = text.replace(/^﻿/, '');
   const rows = [];
   let row = [], cell = '', inQ = false;
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
     if (c === '"') {
-      if (inQ && text[i+1] === '"') { cell += '"'; i++; } // escaped quote ""
+      if (inQ && text[i+1] === '"') { cell += '"'; i++; }
       else inQ = !inQ;
     } else if (c === ',' && !inQ) {
       row.push(cell.trim()); cell = '';
     } else if ((c === '\n' || c === '\r') && !inQ) {
-      if (c === '\r' && text[i+1] === '\n') i++; // CRLF
+      if (c === '\r' && text[i+1] === '\n') i++;
       row.push(cell.trim());
       if (row.some(v => v)) rows.push(row);
       row = []; cell = '';
     } else {
-      // 따옴표 안 줄바꿈(c==='\n' && inQ)은 여기서 cell에 추가됨
       cell += c;
     }
   }
@@ -196,12 +291,8 @@ async function loadData() {
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=44834537`;
     const res = await fetch(url);
     const rows = parseCSV(await res.text());
-
-    // Row 0: [년, "", 월, 수, 합계, 매장당평균, store1, store2, ...]
     const hdr = rows[0];
-    // 셀 내 줄바꿈 정규화: "(신)의정부온라인\n(SSG)" → "(신)의정부온라인(SSG)"
     const allNames = hdr.slice(6).map(n => n.replace(/\s*\n\s*/g, ''));
-
     let curYear = '';
     const monthly = {};
     for (let i = 1; i < rows.length; i++) {
@@ -213,16 +304,11 @@ async function loadData() {
       if (!monthly[curYear]) monthly[curYear] = {};
       monthly[curYear][mi] = { total: pn(row[4]), stores: row.slice(6).map(pn) };
     }
-
     T25 = MONTHS.map((_, i) => monthly['25년']?.[i]?.total || 0);
-
-    // T26: up to last month with data
     let last26 = -1;
     for (let i = 0; i < 12; i++) if ((monthly['26년']?.[i]?.total||0) > 0) last26 = i;
     T26 = [];
     for (let i = 0; i <= last26; i++) T26.push(monthly['26년'][i]?.total || 0);
-
-    // Build STORES — filter hidden and empty
     STORES = allNames
       .map((name, i) => ({ id: i, name }))
       .filter(s => {
@@ -232,38 +318,28 @@ async function loadData() {
         const has26 = T26.some((_, mi) => (monthly['26년']?.[mi]?.stores[s.id]||0) > 0);
         return has25 || has26;
       });
-
     S25 = {}; S26 = {};
     STORES.forEach(s => {
       S25[s.id] = MONTHS.map((_, mi) => monthly['25년']?.[mi]?.stores[s.id] || 0);
       S26[s.id] = T26.map((_, mi) => monthly['26년']?.[mi]?.stores[s.id] || 0);
     });
-
     const lastM = T26.length > 0 ? MONTHS[T26.length-1] : '';
-    const noteText = `온라인 제외 · ${lastM}까지 집계`;
-    document.getElementById('note-total').textContent = noteText;
+    document.getElementById('note-total').textContent = `온라인 제외 · ${lastM}까지 집계`;
     document.getElementById('note-store').textContent = `${lastM}까지 집계`;
   } catch(e) {
     console.warn('시트 로드 실패, 내장 데이터 사용:', e);
     useFallback();
   }
-
-  // "26 Weekly" 시트에서 주차별 데이터 자동 로드
   try {
     const wkUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=26%20Weekly`;
     const wkRes = await fetch(wkUrl);
     const wkText = await wkRes.text();
     const wkRows = parseCSV(wkText);
     parseWeeklyData(wkRows);
-  } catch(e) {
-    // 로드 실패 → 기존 내장 데이터 유지
-  }
+  } catch(e) {}
 }
 
 function parseWeeklyData(rows) {
-  // "26 Weekly" 시트 구조:
-  // col2: 월주(1월1주 등), col4: 전체26년, col6: 전체25년
-  // col(10 + n*7 + 1): 매장n 26년, col(10 + n*7 + 3): 매장n 25년
   const STORE_NAMES = [
     '(롯)남악_O','부천 뉴코아_O','(신)의정부','앨리웨이','유성 NC','여수',
     '(롯)율하_O','송파','충장','동수원','제주','괴정',
@@ -277,9 +353,7 @@ function parseWeeklyData(rows) {
     const row=rows[i];
     const wk=(row[2]||'').trim();
     if (!/\d{1,2}월\d{1,2}주/.test(wk)) continue;
-    labels.push(wk);
-    t26.push(pn(row[4]));
-    t25.push(pn(row[6]));
+    labels.push(wk); t26.push(pn(row[4])); t25.push(pn(row[6]));
     STORE_NAMES.forEach((name,ni) => {
       const base=10+ni*7;
       byName[name].s26.push(pn(row[base+1]));
@@ -341,9 +415,6 @@ function useFallback() {
   };
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════════════
 const state={
   main:'total',
   total:{gran:'cumulative',disp:'table'},
@@ -351,9 +422,6 @@ const state={
 };
 let charts={};
 
-// ═══════════════════════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════════════════════
 const M=(v)=>v?`${(v/1e6).toFixed(1)}M`:'-';
 const FULL=(v)=>v?v.toLocaleString('ko-KR')+'원':'-';
 function getStore(id){ return STORES.find(s=>s.id===id)||STORES[0]; }
@@ -375,41 +443,36 @@ function toGranRows(arr,gran,idxs){
   }));
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// SUMMARY CARDS
-// ═══════════════════════════════════════════════════════════════════
 function renderCards(id,a26,a25){
   const n=a26.length;
   const ytd26=a26.reduce((s,v)=>s+v,0);
   const ytd25=a25.slice(0,n).reduce((s,v)=>s+v,0);
   const ytd25y=a25.reduce((s,v)=>s+v,0);
   const lbl=ytdLabel();
+  const diff=ytd26-ytd25;
   document.getElementById(id).innerHTML=`
-    <div class="card">
+    <div class="card card-blue">
       <div class="card-label">26년 누적 (${lbl})</div>
       <div class="card-value">${M(ytd26)}</div>
       <div class="card-sub">${FULL(ytd26)}</div>
     </div>
-    <div class="card">
+    <div class="card card-green">
       <div class="card-label">25년 동기간 (${lbl})</div>
       <div class="card-value">${M(ytd25)}</div>
       <div class="card-sub">${FULL(ytd25)}</div>
     </div>
-    <div class="card">
+    <div class="card card-purple">
       <div class="card-label">전년 동기 대비</div>
-      <div class="card-value" style="font-size:20px">${growthHtml(ytd26,ytd25)}</div>
-      <div class="card-sub">${ytd26>=ytd25?'↑':'↓'} ${M(Math.abs(ytd26-ytd25))}</div>
+      <div class="card-value">${growthHtml(ytd26,ytd25)}</div>
+      <div class="card-sub">${diff>=0?'↑':'↓'} ${M(Math.abs(diff))}</div>
     </div>
-    <div class="card">
+    <div class="card card-orange">
       <div class="card-label">25년 연간 합계</div>
       <div class="card-value">${M(ytd25y)}</div>
       <div class="card-sub">${FULL(ytd25y)}</div>
     </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// TABLES
-// ═══════════════════════════════════════════════════════════════════
 function renderCumulativeTable(id){
   const n=T26.length, lbl=ytdLabel();
   let html=`<table><thead><tr>
@@ -487,7 +550,6 @@ function renderWeeklyTable(id,wk26,wk25,label25,label26){
       <td class="td-growth">${(v26&&v25)?(diff>=0?'<span class="growth-up">+':'<span class="growth-down">')+M(Math.abs(diff))+'</span>':'-'}</td>
     </tr>`;
   });
-  // 26년 데이터가 있는 주차만 기준으로 합계 계산 (동기간 비교)
   const sum26=cur26.slice(1).reduce((s,v)=>s+(v||0),0);
   const sum25=cur25.slice(1).reduce((s,v,i)=>s+((cur26[i+1]||0)>0?(v||0):0),0);
   const dsum=sum26-sum25;
@@ -515,9 +577,6 @@ function renderStoreCumulativeTable(id,storeId){
   document.getElementById(id).innerHTML=html;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// CHARTS
-// ═══════════════════════════════════════════════════════════════════
 function renderChart(canvasId,a25,a26,gran,storeName,wk26,wk25){
   if(charts[canvasId]){charts[canvasId].destroy();delete charts[canvasId];}
   let labels, d26, d25;
@@ -538,13 +597,13 @@ function renderChart(canvasId,a25,a26,gran,storeName,wk26,wk25){
   charts[canvasId]=new Chart(ctx,{
     type:'bar',
     data:{labels,datasets:[
-      {label:'2025년 (백만원)',data:d25,backgroundColor:'#334155cc',borderRadius:4,order:2},
-      {label:'2026년 (백만원)',data:d26,backgroundColor:'#38bdf8cc',borderRadius:4,order:2},
+      {label:'2025년 (백만원)',data:d25,backgroundColor:'#94a3b8aa',borderRadius:4,order:2},
+      {label:'2026년 (백만원)',data:d26,backgroundColor:'#3b82f6cc',borderRadius:4,order:2},
       {label:'전년비 (%)',data:dg,type:'line',borderColor:'#f472b6',backgroundColor:'#f472b615',borderWidth:2,pointRadius:5,pointBackgroundColor:'#f472b6',yAxisID:'y2',order:1,tension:.3}
     ]},
     options:{responsive:true,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#94a3b8',font:{size:12}}},tooltip:{callbacks:{label(c){return c.dataset.yAxisID==='y2'?` 전년비: ${c.parsed.y>0?'+':''}${c.parsed.y}%`:` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}M`;}}}},
-      scales:{x:{ticks:{color:'#64748b'},grid:{color:'#1e293b'}},y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#1e293b50'}},y2:{position:'right',ticks:{color:'#f472b6',callback:v=>v+'%'},grid:{drawOnChartArea:false}}}
+      plugins:{legend:{labels:{color:'#64748b',font:{size:12}}},tooltip:{callbacks:{label(c){return c.dataset.yAxisID==='y2'?` 전년비: ${c.parsed.y>0?'+':''}${c.parsed.y}%`:` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}M`;}}}},
+      scales:{x:{ticks:{color:'#64748b'},grid:{color:'#f1f5f9'}},y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#e2e8f0'}},y2:{position:'right',ticks:{color:'#f472b6',callback:v=>v+'%'},grid:{drawOnChartArea:false}}}
     }
   });
 }
@@ -562,22 +621,47 @@ function renderCumulativeChart(canvasId){
   charts[canvasId]=new Chart(ctx,{
     type:'bar',
     data:{labels,datasets:[
-      {label:'25년 동기간 (백만원)',data:d25,backgroundColor:'#334155cc',borderRadius:3,order:2},
-      {label:'26년 누적 (백만원)',data:d26,backgroundColor:'#38bdf8cc',borderRadius:3,order:2},
+      {label:'25년 동기간 (백만원)',data:d25,backgroundColor:'#94a3b8aa',borderRadius:3,order:2},
+      {label:'26년 누적 (백만원)',data:d26,backgroundColor:'#3b82f6cc',borderRadius:3,order:2},
     ]},
     options:{responsive:true,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#94a3b8',font:{size:12}}},tooltip:{callbacks:{label(c){return` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}M`;}}}},
-      scales:{x:{ticks:{color:'#64748b',maxRotation:45},grid:{color:'#1e293b'}},y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#1e293b50'}}}
+      plugins:{legend:{labels:{color:'#64748b',font:{size:12}}},tooltip:{callbacks:{label(c){return` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}M`;}}}},
+      scales:{x:{ticks:{color:'#64748b',maxRotation:45},grid:{color:'#f1f5f9'}},y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#e2e8f0'}}}
     }
   });
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// RENDER SECTIONS
-// ═══════════════════════════════════════════════════════════════════
+function renderTrendChart(){
+  if(charts['canvas-trend']){charts['canvas-trend'].destroy();delete charts['canvas-trend'];}
+  const labels=MONTHS;
+  const d25=T25.map(v=>+(v/1e6).toFixed(1));
+  const d26=MONTHS.map((_,i)=>i<T26.length?+(T26[i]/1e6).toFixed(1):null);
+  const ctx=document.getElementById('canvas-trend').getContext('2d');
+  charts['canvas-trend']=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'2025년',data:d25,borderColor:'#8b5cf6',backgroundColor:'#8b5cf610',borderWidth:2,borderDash:[5,4],pointRadius:4,pointBackgroundColor:'#8b5cf6',tension:.4,fill:false},
+      {label:'2026년',data:d26,borderColor:'#3b82f6',backgroundColor:'#3b82f615',borderWidth:2.5,pointRadius:5,pointBackgroundColor:'#3b82f6',tension:.4,fill:true,spanGaps:false}
+    ]},
+    options:{
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{color:'#64748b',font:{size:12}}},
+        tooltip:{callbacks:{label(c){return c.parsed.y!==null?` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}M`:null;}}}
+      },
+      scales:{
+        x:{ticks:{color:'#64748b'},grid:{color:'#e2e8f0'}},
+        y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#e2e8f0'}}
+      }
+    }
+  });
+}
+
 function renderTotal(){
   const{gran,disp}=state.total;
   renderCards('cards-total',T26,T25);
+  renderTrendChart();
   const showTable=disp==='table';
   document.getElementById('table-total').classList.toggle('hidden',!showTable);
   document.getElementById('chart-total').classList.toggle('hidden',showTable);
@@ -616,35 +700,33 @@ function renderStore(){
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// CONTROLLERS
-// ═══════════════════════════════════════════════════════════════════
 function switchMain(tab){
   state.main=tab;
-  document.querySelectorAll('.main-tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='total')||(i===1&&tab==='store')));
-  document.getElementById('sec-total').classList.toggle('active',tab==='total');
-  document.getElementById('sec-store').classList.toggle('active',tab==='store');
-  if(tab==='total')renderTotal();else renderStore();
+  document.getElementById('nav-total').classList.toggle('active', tab==='total');
+  document.getElementById('nav-store').classList.toggle('active', tab==='store');
+  document.getElementById('sec-total').classList.toggle('active', tab==='total');
+  document.getElementById('sec-store').classList.toggle('active', tab==='store');
+  if(tab==='total') renderTotal(); else renderStore();
 }
+
 function setGran(sec,val){
   state[sec].gran=val;
   const btns=document.getElementById('gran-'+sec).querySelectorAll('button');
   ['cumulative','monthly','weekly','daily'].forEach((v,i)=>btns[i].classList.toggle('active',v===val));
   if(sec==='total')renderTotal();else renderStore();
 }
+
 function setDisp(sec,val){
   state[sec].disp=val;
   document.getElementById('disp-'+sec).querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active',['table','chart'][i]===val));
   if(sec==='total')renderTotal();else renderStore();
 }
+
 function onStoreChange(){
   state.store.id=+document.getElementById('store-select').value;
   renderStore();
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════════
 (async function init(){
   await loadData();
   document.getElementById('loading').style.display='none';
