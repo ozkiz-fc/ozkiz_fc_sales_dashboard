@@ -260,6 +260,7 @@ let WK_BY_NAME = {
 };
 
 let STORES = [], T25 = [], T26 = [], S25 = {}, S26 = {};
+let DAILY_LABELS = [], DAILY_VALS_26 = [], DAILY_VALS_25 = [];
 
 function parseCSV(text) {
   text = text.replace(/^﻿/, '');
@@ -362,6 +363,33 @@ function parseWeeklyData(rows) {
   }
   if (labels.length===0) return;
   WK_LABELS=labels; WK_T26=t26; WK_T25=t25; WK_BY_NAME=byName;
+}
+
+async function loadDailyData() {
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=1839494349`;
+    const res = await fetch(url);
+    const rows = parseCSV(await res.text());
+    const labels26=[], vals26=[], labels25=[], vals25=[];
+    for (const row of rows) {
+      const cell = (row[0]||'').trim();
+      // YYYY-MM-DD 또는 YYYY. M. D 형식 모두 허용
+      const m = cell.match(/^(\d{4})[-.\s]+(\d{1,2})[-.\s]+(\d{1,2})/);
+      if (!m) continue;
+      const year=m[1], mon=m[2].padStart(2,'0'), day=m[3].padStart(2,'0');
+      const label=`${mon}-${day}`;
+      const val=pn(row[5]); // F열
+      if (!val) continue;
+      if (year==='2026'){ labels26.push(label); vals26.push(val); }
+      else if (year==='2025'){ labels25.push(label); vals25.push(val); }
+    }
+    if (labels26.length > 0) {
+      DAILY_LABELS=labels26; DAILY_VALS_26=vals26; DAILY_VALS_25=vals25;
+      console.log(`일별 데이터 로드: 26년 ${labels26.length}일, 25년 ${labels25.length}일`);
+    }
+  } catch(e) {
+    console.warn('일별 데이터 로드 실패:', e);
+  }
 }
 
 function useFallback() {
@@ -641,11 +669,17 @@ function renderTrendChart(gran){
     title='📈 주별 매출 추이';
     sub='25년 · 26년 비교';
   } else if(gran==='daily'){
-    labels=MONTHS;
-    d25=T25.map((v,i)=>+(v/DAYS[i]/1e6).toFixed(2));
-    d26=MONTHS.map((_,i)=>i<T26.length?+(T26[i]/DAYS[i]/1e6).toFixed(2):null);
+    if(DAILY_LABELS.length>0){
+      labels=DAILY_LABELS;
+      d26=DAILY_VALS_26.map(v=>+(v/1e6).toFixed(2));
+      d25=DAILY_VALS_25.length>0?DAILY_VALS_25.map(v=>+(v/1e6).toFixed(2)):null;
+    } else {
+      labels=MONTHS;
+      d26=MONTHS.map((_,i)=>i<T26.length?+(T26[i]/DAYS[i]/1e6).toFixed(2):null);
+      d25=T25.map((v,i)=>+(v/DAYS[i]/1e6).toFixed(2));
+    }
     title='📈 일자별 매출 추이';
-    sub='25년 · 26년 월별 일평균';
+    sub='26년 일간 매출';
   } else {
     labels=MONTHS;
     d25=T25.map(v=>+(v/1e6).toFixed(1));
@@ -655,13 +689,16 @@ function renderTrendChart(gran){
   }
   document.querySelector('.trend-title').textContent=title;
   document.querySelector('.trend-sub').textContent=sub;
+  const isDaily=gran==='daily';
+  const datasets=[];
+  if(d25&&d25.length>0){
+    datasets.push({label:'2025년',data:d25,borderColor:'#8b5cf6',backgroundColor:'#8b5cf610',borderWidth:isDaily?1:2,borderDash:[5,4],pointRadius:isDaily?0:4,pointBackgroundColor:'#8b5cf6',tension:isDaily?.1:.4,fill:false});
+  }
+  datasets.push({label:'2026년',data:d26,borderColor:'#3b82f6',backgroundColor:'#3b82f615',borderWidth:isDaily?1.5:2.5,pointRadius:isDaily?0:5,pointHoverRadius:isDaily?4:6,pointBackgroundColor:'#3b82f6',tension:isDaily?.1:.4,fill:!isDaily,spanGaps:false});
   const ctx=document.getElementById('canvas-trend').getContext('2d');
   charts['canvas-trend']=new Chart(ctx,{
     type:'line',
-    data:{labels,datasets:[
-      {label:'2025년',data:d25,borderColor:'#8b5cf6',backgroundColor:'#8b5cf610',borderWidth:2,borderDash:[5,4],pointRadius:4,pointBackgroundColor:'#8b5cf6',tension:.4,fill:false},
-      {label:'2026년',data:d26,borderColor:'#3b82f6',backgroundColor:'#3b82f615',borderWidth:2.5,pointRadius:5,pointBackgroundColor:'#3b82f6',tension:.4,fill:true,spanGaps:false}
-    ]},
+    data:{labels,datasets},
     options:{
       responsive:true,
       interaction:{mode:'index',intersect:false},
@@ -747,7 +784,7 @@ function onStoreChange(){
 }
 
 (async function init(){
-  await loadData();
+  await Promise.all([loadData(), loadDailyData()]);
   document.getElementById('loading').style.display='none';
   const sel=document.getElementById('store-select');
   STORES.forEach(s=>{
