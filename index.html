@@ -261,6 +261,13 @@ let WK_BY_NAME = {
 
 let STORES = [], T25 = [], T26 = [], S25 = {}, S26 = {};
 let DAILY_LABELS = [], DAILY_VALS_26 = [], DAILY_VALS_25 = [];
+let DAILY_S26 = {}, DAILY_S25 = {};
+const DAILY_STORE_NAMES = [
+  '(롯)남악_O','부천 뉴코아_O','(신)의정부','앨리웨이','유성 NC','여수',
+  '(롯)율하_O','송파','충장','동수원','제주','괴정',
+  '강서 NC','순천','평택','고척','현풍','원주',
+  '나주','마리오','평촌','창원'
+];
 
 function parseCSV(text) {
   text = text.replace(/^﻿/, '');
@@ -370,26 +377,41 @@ async function loadDailyData() {
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=1839494349`;
     const res = await fetch(url);
     const rows = parseCSV(await res.text());
-    const labels26=[], vals26=[], labels25=[], vals25=[];
+
+    // 헤더 행에서 "일매출"/"전년" 컬럼 인덱스 자동 감지
+    let dailyCols=[], prevCols=[];
     for (const row of rows) {
-      const cell = (row[0]||'').trim();
-      // YYYY-MM-DD 또는 YYYY. M. D 형식 모두 허용
-      const m = cell.match(/^(\d{4})[-.\s]+(\d{1,2})[-.\s]+(\d{1,2})/);
-      if (!m) continue;
-      const year=m[1], mon=m[2].padStart(2,'0'), day=m[3].padStart(2,'0');
-      const label=`${mon}-${day}`;
-      const val26=pn(row[5]); // F열: 26년 일간 합계
-      const val25=pn(row[6]); // G열: 전년동일 (25년)
-      if (!val26) continue;
-      if (year==='2026'){
-        labels26.push(label);
-        vals26.push(val26);
-        vals25.push(val25); // G열에서 직접 25년 데이터 취득
+      if (row.some(v=>v.trim()==='일매출')) {
+        row.forEach((v,i)=>{ if(v.trim()==='일매출') dailyCols.push(i); });
+        row.forEach((v,i)=>{ if(v.trim()==='전년') prevCols.push(i); });
+        break;
       }
     }
-    if (labels26.length > 0) {
+    console.log('일매출 컬럼:', dailyCols, '전년 컬럼:', prevCols);
+
+    // 매장별 임시 저장소 초기화
+    const tmpS26={}, tmpS25={};
+    DAILY_STORE_NAMES.forEach(n=>{ tmpS26[n]=[]; tmpS25[n]=[]; });
+    const labels26=[], vals26=[], vals25=[];
+
+    for (const row of rows) {
+      const cell=(row[0]||'').trim();
+      const m=cell.match(/^(\d{4})[-.\s]+(\d{1,2})[-.\s]+(\d{1,2})/);
+      if (!m || m[1]!=='2026') continue;
+      const label=`${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+      const v26=pn(row[5]); // F열: 전체 일간합계
+      const v25=pn(row[6]); // G열: 전체 전년동일
+      if (!v26 && !v25) continue;
+      labels26.push(label); vals26.push(v26); vals25.push(v25);
+      // 매장별 일매출/전년 파싱
+      dailyCols.forEach((ci,ni)=>{ if(ni<DAILY_STORE_NAMES.length) tmpS26[DAILY_STORE_NAMES[ni]].push(pn(row[ci])); });
+      prevCols.forEach((ci,ni)=>{ if(ni<DAILY_STORE_NAMES.length) tmpS25[DAILY_STORE_NAMES[ni]].push(pn(row[ci])); });
+    }
+
+    if (labels26.length>0) {
       DAILY_LABELS=labels26; DAILY_VALS_26=vals26; DAILY_VALS_25=vals25;
-      console.log(`일별 데이터 로드: 26년 ${labels26.length}일, 25년 ${labels25.length}일`);
+      DAILY_S26=tmpS26; DAILY_S25=tmpS25;
+      console.log(`일별 로드 완료: ${labels26.length}일, 매장 ${dailyCols.length}개`);
     }
   } catch(e) {
     console.warn('일별 데이터 로드 실패:', e);
@@ -663,6 +685,34 @@ function renderCumulativeChart(canvasId){
   });
 }
 
+function renderStoreDailyChart(canvasId, name, d26, d25){
+  if(charts[canvasId]){charts[canvasId].destroy();delete charts[canvasId];}
+  const labels=DAILY_LABELS;
+  const data26=d26.map(v=>+(v/1e6).toFixed(2));
+  const datasets=[];
+  if(d25&&d25.some(v=>v>0)){
+    datasets.push({label:'2025년',data:d25.map(v=>+(v/1e6).toFixed(2)),borderColor:'#8b5cf6',backgroundColor:'#8b5cf610',borderWidth:1,borderDash:[4,3],pointRadius:0,pointHoverRadius:4,tension:.1,fill:false});
+  }
+  datasets.push({label:'2026년',data:data26,borderColor:'#3b82f6',backgroundColor:'#3b82f615',borderWidth:1.5,pointRadius:0,pointHoverRadius:4,tension:.1,fill:false});
+  const ctx=document.getElementById(canvasId).getContext('2d');
+  charts[canvasId]=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets},
+    options:{
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{color:'#64748b',font:{size:12}}},
+        tooltip:{callbacks:{label(c){return` ${c.dataset.label}: ${c.parsed.y.toFixed(2)}M`;}}}
+      },
+      scales:{
+        x:{ticks:{color:'#64748b',maxTicksLimit:20},grid:{color:'#e2e8f0'}},
+        y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#e2e8f0'}}
+      }
+    }
+  });
+}
+
 function renderTrendChart(gran){
   if(charts['canvas-trend']){charts['canvas-trend'].destroy();delete charts['canvas-trend'];}
   let labels, d25, d26, title, sub;
@@ -755,8 +805,14 @@ function renderStore(){
       document.getElementById('table-store').innerHTML='<div style="padding:20px;color:#64748b">주차별 데이터 없음</div>';
     }
   } else {
-    if(showTable) renderPeriodTable('table-store',a25,a26,gran,'25년 '+s.name,'26년 '+s.name);
-    else          renderChart('canvas-store',a25,a26,gran,s.name);
+    const dS26=DAILY_S26[s.name]||[], dS25=DAILY_S25[s.name]||[];
+    if(showTable){
+      renderPeriodTable('table-store',a25,a26,gran,'25년 '+s.name,'26년 '+s.name);
+    } else if(gran==='daily'&&dS26.length>0){
+      renderStoreDailyChart('canvas-store',s.name,dS26,dS25);
+    } else {
+      renderChart('canvas-store',a25,a26,gran,s.name);
+    }
   }
 }
 
