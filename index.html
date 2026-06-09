@@ -7,853 +7,680 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Malgun Gothic','Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
-
-/* ── 앱 레이아웃 ── */
-.app-layout{display:flex;min-height:100vh}
+body{font-family:'Malgun Gothic','Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b;min-height:100vh;display:flex;font-size:16px}
 
 /* ── 사이드바 ── */
-.sidebar{
-  width:200px;min-width:200px;
-  background:#ffffff;
-  border-right:1px solid #e2e8f0;
-  display:flex;flex-direction:column;
-  position:sticky;top:0;height:100vh;
-  overflow-y:auto;flex-shrink:0;
-  box-shadow:1px 0 8px #0000000a;
-}
-.sidebar-logo{
-  padding:20px 16px 18px;
-  border-bottom:1px solid #e2e8f0;
-}
-.sidebar-logo-img{width:28px;height:28px;object-fit:cover;object-position:center;border-radius:6px;display:block;margin-bottom:8px}
-.sidebar-logo-text{display:contents}
-.sidebar-logo .logo-title{font-size:14px;font-weight:700;color:#1e293b;line-height:1.4}
-.sidebar-logo .logo-title span{color:#3b82f6}
-.sidebar-nav{padding:12px 8px;flex:1}
-.nav-section-label{
-  font-size:10px;font-weight:600;color:#94a3b8;
-  text-transform:uppercase;letter-spacing:.8px;
-  padding:12px 12px 4px;
-}
-.nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 14px;border-radius:8px;
-  cursor:pointer;font-size:13px;font-weight:500;
-  color:#64748b;border:none;background:transparent;
-  width:100%;text-align:left;
-  transition:all .15s;font-family:inherit;
-}
-.nav-item:hover:not(.active){background:#f8fafc;color:#1e293b}
-.nav-item.active{background:#eff6ff;color:#3b82f6;font-weight:600}
-.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
-.sidebar-footer{
-  padding:14px 16px;
-  border-top:1px solid #e2e8f0;
-  font-size:11px;color:#94a3b8;
-  line-height:1.6;
-}
+.sidebar{width:240px;min-width:240px;background:#0f172a;display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:100;overflow-y:auto}
+.brand{padding:24px 18px 18px;border-bottom:1px solid #1e293b}
+.brand-icon{font-size:30px;margin-bottom:8px}
+.brand-name{font-size:17px;font-weight:700;color:#f1f5f9}
+.brand-sub{font-size:13px;color:#64748b;margin-top:3px}
+.sidenav{padding:12px 10px;flex:1}
+.nav-item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:8px;border:none;cursor:pointer;font-size:16px;font-weight:500;color:#94a3b8;background:transparent;font-family:inherit;text-align:left;transition:all .15s;margin-bottom:4px}
+.nav-item:hover:not(.active){background:#1e293b;color:#e2e8f0}
+.nav-item.active{background:#0ea5e915;color:#38bdf8;font-weight:700}
+.nav-icon{font-size:17px;width:20px;text-align:center}
+.sidebar-footer{padding:14px 18px;border-top:1px solid #1e293b}
+.sidebar-footer p{font-size:13px;color:#475569;line-height:2}
 
-/* ── 메인 컨텐츠 ── */
-.main-content{flex:1;min-width:0;display:flex;flex-direction:column}
+/* ── 메인 ── */
+.main-wrapper{margin-left:240px;flex:1;min-width:0;display:flex;flex-direction:column}
+.section-wrap{display:none}.section-wrap.active{display:block}
 
-/* ── 컨트롤바 ── */
-.controls-bar{padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #e2e8f0;background:#ffffff}
-.store-select{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 12px;color:#1e293b;font-size:13px;min-width:210px;cursor:pointer;font-family:inherit}
-.store-select:focus{outline:none;border-color:#3b82f6}
-.btn-group{display:flex;gap:2px;background:#f1f5f9;border-radius:6px;padding:3px}
-.btn-group button{padding:4px 12px;border-radius:4px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;color:#64748b;background:transparent;font-family:inherit}
-.btn-group button.active{background:#3b82f6;color:#ffffff}
-.btn-group button:hover:not(.active){background:#e2e8f0;color:#1e293b}
-.note-tag{font-size:11px;color:#94a3b8;padding:3px 8px;background:#f8fafc;border-radius:4px;border:1px solid #e2e8f0;margin-left:auto}
+/* ── 탑바 ── */
+.topbar{padding:14px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid #e2e8f0;background:#ffffff;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto}
+.page-title{font-size:18px;font-weight:700;color:#0f172a;white-space:nowrap}
+.updated{font-size:13px;color:#94a3b8}
+.store-select{background:#fff;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px 14px;color:#334155;font-size:15px;cursor:pointer;font-family:inherit;min-width:180px}
+.store-select:focus{outline:none;border-color:#0ea5e9}
+.btn-group{display:flex;gap:2px;background:#f1f5f9;border-radius:8px;padding:4px}
+.btn-group button{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:14px;font-weight:600;transition:all .2s;color:#64748b;background:transparent;font-family:inherit}
+.btn-group button.active{background:#0ea5e9;color:#fff;box-shadow:0 1px 4px #0ea5e940}
+.btn-group button:hover:not(.active){background:#e2e8f0;color:#334155}
+.note-tag{font-size:13px;color:#64748b;padding:5px 12px;background:#f1f5f9;border-radius:6px;border:1.5px solid #e2e8f0;white-space:nowrap}
+.divider{width:1.5px;height:22px;background:#e2e8f0;flex-shrink:0}
 
-/* ── 카드 ── */
-.summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:10px;padding:14px 24px}
-.card{background:#ffffff;border-radius:10px;padding:14px 16px;border:1px solid #e2e8f0;border-top:3px solid #e2e8f0;transition:transform .15s,box-shadow .15s}
-.card:hover{transform:translateY(-2px);box-shadow:0 4px 20px #0000001a}
-.card-label{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
-.card-value{font-size:21px;font-weight:700;color:#1e293b;margin-bottom:3px}
-.card-sub{font-size:11px;color:#94a3b8}
-.card-blue{border-top-color:#3b82f6}.card-blue .card-value{color:#3b82f6}
-.card-green{border-top-color:#22c55e}.card-green .card-value{color:#22c55e}
-.card-purple{border-top-color:#a855f7}.card-purple .card-value{color:#a855f7}
-.card-orange{border-top-color:#f97316}.card-orange .card-value{color:#f97316}
-.growth-up{color:#16a34a}
-.growth-down{color:#dc2626}
-.growth-flat{color:#64748b}
+/* ── 요약 카드 ── */
+.summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:20px 28px}
+.card{background:#fff;border-radius:12px;padding:20px 22px;border:1.5px solid #e2e8f0;border-top-width:4px;box-shadow:0 1px 4px #0000000a}
+.card-c1{border-top-color:#0ea5e9}
+.card-c2{border-top-color:#22c55e}
+.card-c3{border-top-color:#8b5cf6}
+.card-c4{border-top-color:#f97316}
+.card-label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;font-weight:700}
+.card-value{font-size:28px;font-weight:700;color:#0f172a;letter-spacing:-.5px;margin-bottom:4px}
+.card-qty{font-size:15px;color:#0284c7;font-weight:600;margin-bottom:6px}
+.card-sub{font-size:12px;color:#94a3b8;line-height:1.5;word-break:break-all}
+.growth-up{color:#16a34a}.growth-down{color:#dc2626}.growth-flat{color:#94a3b8}
 
-/* ── 트렌드 차트 ── */
-.trend-section{margin:0 24px 14px;background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:16px 20px}
-.trend-header{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
-.trend-title{font-size:14px;font-weight:600;color:#1e293b}
-.trend-sub{font-size:12px;color:#94a3b8}
-#canvas-trend{max-height:260px}
-
-/* ── 테이블 ── */
-.content-area{padding:14px 24px}
-.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #e2e8f0}
-table{width:100%;border-collapse:collapse;font-size:13px}
+/* ── 컨텐츠 ── */
+.content-area{padding:0 28px 32px;display:flex;flex-direction:column;gap:18px}
+.table-wrap{overflow-x:auto;border-radius:12px;border:1.5px solid #e2e8f0;background:#fff;box-shadow:0 1px 4px #0000000a}
+table{width:100%;border-collapse:collapse;font-size:15px}
 thead tr{background:#f8fafc}
-th{padding:9px 14px;text-align:right;font-weight:600;color:#64748b;font-size:11px;white-space:nowrap;border-bottom:1px solid #e2e8f0}
+th{padding:12px 16px;text-align:right;font-weight:700;color:#475569;font-size:13px;white-space:nowrap;border-bottom:2px solid #e2e8f0}
 th:first-child{text-align:left}
-td{padding:8px 14px;text-align:right;border-bottom:1px solid #f1f5f9;color:#1e293b;white-space:nowrap}
-td:first-child{text-align:left;color:#64748b;font-weight:500}
+td{padding:10px 16px;text-align:right;border-bottom:1px solid #f1f5f9;color:#334155;white-space:nowrap;vertical-align:middle}
+td:first-child{text-align:left;color:#475569;font-weight:600}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#f8fafc}
-.td-growth{font-weight:700;font-size:12px}
-.td-total td{background:#f1f5f9;font-weight:700;color:#1e293b;border-top:1px solid #e2e8f0}
-.td-total td:first-child{color:#3b82f6}
-
-/* ── 차트 ── */
-.chart-wrap{background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:16px}
-.chart-wrap canvas{max-height:380px}
-
-/* ── 배지 ── */
-.partial-badge{display:inline-block;font-size:10px;padding:1px 5px;background:#7c3aed15;color:#7c3aed;border:1px solid #7c3aed30;border-radius:3px;margin-left:4px;vertical-align:middle}
-.excl-badge{display:inline-block;font-size:10px;padding:1px 5px;background:#ef444415;color:#dc2626;border:1px solid #ef444430;border-radius:3px;margin-left:4px;vertical-align:middle}
-.section{display:none}
-.section.active{display:block}
+.td-growth{font-weight:700;font-size:14px}
+.td-total td{background:#f1f5f9;font-weight:700;color:#0f172a;border-top:2px solid #e2e8f0}
+.td-total td:first-child{color:#0284c7}
+.chart-wrap{background:#fff;border-radius:12px;border:1.5px solid #e2e8f0;padding:20px 22px;box-shadow:0 1px 4px #0000000a}
+.chart-wrap canvas{max-height:360px}
+.chart-title{font-size:15px;font-weight:700;color:#475569;margin-bottom:14px}
+.cv{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.cv-a{color:#334155;font-size:14px}
+.cv-q{font-size:13px;color:#94a3b8}
+.partial-badge{display:inline-block;font-size:12px;padding:2px 7px;background:#7c3aed15;color:#7c3aed;border:1.5px solid #7c3aed30;border-radius:4px;margin-left:6px;vertical-align:middle}
 .hidden{display:none!important}
-.divider{width:1px;height:18px;background:#e2e8f0}
-
-/* ── 로딩 ── */
-#loading{position:fixed;inset:0;background:#f1f5f9;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
-#loading p{color:#94a3b8;font-size:13px}
-.spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite}
+#loading{position:fixed;inset:0;background:#f0f4f8;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:18px}
+#loading p{color:#64748b;font-size:16px;text-align:center;white-space:pre-line;max-width:380px;line-height:1.7}
+.spinner{width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#0ea5e9;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── 반응형 ── */
-@media(max-width:768px){
-  .app-layout{flex-direction:column}
-  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap}
-  .sidebar-logo{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:none;border-right:1px solid #e2e8f0}
-  .sidebar-logo .logo-icon{margin-bottom:0;font-size:18px}
-  .sidebar-nav{display:flex;flex-direction:row;padding:6px 8px;gap:4px}
-  .nav-section-label{display:none}
-  .sidebar-footer{display:none}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .main-wrapper{margin-left:0}
+  .summary-cards{grid-template-columns:1fr 1fr}
 }
-@media(max-width:640px){.summary-cards{grid-template-columns:1fr 1fr}.note-tag{margin-left:0}}
 </style>
 </head>
 <body>
 
-<div id="loading"><div class="spinner"></div><p>데이터 불러오는 중...</p></div>
+<div id="loading">
+  <div class="spinner" id="loading-spinner"></div>
+  <p id="loading-msg">데이터 불러오는 중...</p>
+</div>
 
-<div class="app-layout">
+<!-- ▸ 사이드바 -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-icon">🧸</div>
+    <div class="brand-name">오즈키즈 FC</div>
+    <div class="brand-sub">매출 대시보드</div>
+  </div>
+  <nav class="sidenav">
+    <button class="nav-item active" id="nav-total" onclick="switchMain('total')">
+      <span class="nav-icon">🏪</span> 전체 매장
+    </button>
+    <button class="nav-item" id="nav-store" onclick="switchMain('store')">
+      <span class="nav-icon">📊</span> 매장별
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <p>온라인 매출 제외</p>
+    <p>Google Sheets 연동</p>
+  </div>
+</aside>
 
-  <!-- ▸ 사이드바 -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <img class="sidebar-logo-img" src="https://wimg.sedaily.com/news/legacy/2024/08/26/2DD6243ZX6_1.png" alt="오즈키즈 FC">
-      <div class="sidebar-logo-text">
-        <div class="logo-title">오즈키즈 FC<br><span>매출 대시보드</span></div>
+<!-- ▸ 메인 -->
+<div class="main-wrapper">
+
+  <!-- 전체 매장 -->
+  <div id="sec-total" class="section-wrap active">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">전체 매장</span>
+        <span id="updated-at" class="updated"></span>
       </div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section-label">메인</div>
-      <button class="nav-item active" id="nav-total" onclick="switchMain('total')">
-        <span class="nav-icon">🏠</span>전체 매장
-      </button>
-      <button class="nav-item" id="nav-store" onclick="switchMain('store')">
-        <span class="nav-icon">🏪</span>매장별
-      </button>
-    </nav>
-    <div class="sidebar-footer">
-      온라인 매출 제외<br>
-      Google Sheets 연동
-    </div>
-  </aside>
-
-  <!-- ▸ 메인 컨텐츠 -->
-  <div class="main-content">
-
-    <!-- ▸ TOTAL SECTION -->
-    <div id="sec-total" class="section active">
-      <div class="controls-bar">
+      <div class="topbar-right">
         <div class="btn-group" id="gran-total">
           <button class="active" onclick="setGran('total','cumulative')">누적</button>
           <button onclick="setGran('total','monthly')">월별</button>
           <button onclick="setGran('total','weekly')">주차별</button>
           <button onclick="setGran('total','daily')">일별</button>
         </div>
-        <div class="divider"></div>
-        <div class="btn-group" id="disp-total">
-          <button class="active" onclick="setDisp('total','table')">📋 표</button>
-          <button onclick="setDisp('total','chart')">📊 그래프</button>
-        </div>
         <span class="note-tag" id="note-total">온라인 제외 · 집계중</span>
       </div>
-      <div class="summary-cards" id="cards-total"></div>
-      <div class="trend-section">
-        <div class="trend-header">
-          <span class="trend-title">📈 월별 매출 추이</span>
-          <span class="trend-sub">25년 · 26년 비교</span>
-        </div>
-        <canvas id="canvas-trend"></canvas>
-      </div>
-      <div class="content-area">
-        <div id="table-total" class="table-wrap"></div>
-        <div id="chart-total" class="chart-wrap hidden"><canvas id="canvas-total"></canvas></div>
-      </div>
     </div>
+    <div class="summary-cards" id="cards-total"></div>
+    <div class="content-area">
+      <div class="chart-wrap">
+        <div class="chart-title" id="chart-total-title"></div>
+        <canvas id="canvas-total"></canvas>
+      </div>
+      <div id="table-total" class="table-wrap"></div>
+    </div>
+  </div>
 
-    <!-- ▸ STORE SECTION -->
-    <div id="sec-store" class="section">
-      <div class="controls-bar">
+  <!-- 매장별 -->
+  <div id="sec-store" class="section-wrap">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">매장별</span>
         <select class="store-select" id="store-select" onchange="onStoreChange()"></select>
-        <div class="divider"></div>
+      </div>
+      <div class="topbar-right">
         <div class="btn-group" id="gran-store">
           <button class="active" onclick="setGran('store','cumulative')">누적</button>
           <button onclick="setGran('store','monthly')">월별</button>
           <button onclick="setGran('store','weekly')">주차별</button>
           <button onclick="setGran('store','daily')">일별</button>
         </div>
-        <div class="divider"></div>
-        <div class="btn-group" id="disp-store">
-          <button class="active" onclick="setDisp('store','table')">📋 표</button>
-          <button onclick="setDisp('store','chart')">📊 그래프</button>
-        </div>
         <span class="note-tag" id="note-store">집계중</span>
       </div>
-      <div class="summary-cards" id="cards-store"></div>
-      <div class="content-area">
-        <div id="table-store" class="table-wrap"></div>
-        <div id="chart-store" class="chart-wrap hidden"><canvas id="canvas-store"></canvas></div>
-      </div>
     </div>
+    <div class="summary-cards" id="cards-store"></div>
+    <div class="content-area">
+      <div class="chart-wrap">
+        <div class="chart-title" id="chart-store-title"></div>
+        <canvas id="canvas-store"></canvas>
+      </div>
+      <div id="table-store" class="table-wrap"></div>
+    </div>
+  </div>
 
-  </div><!-- /.main-content -->
-</div><!-- /.app-layout -->
+</div>
 
 <script>
-const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-const DAYS   = [31,28,31,30,31,30,31,31,30,31,30,31];
-const SHEET_ID = '1y3G2qm-743LvJXngpSeXfUptSSiS5rXBagky_ahq92M';
-const HIDDEN_STORES = ['(신)의정부온라인(SSG)', '평촌(온)', '전주', '(롯)센텀', '링크맘', '(롯)서면'];
+// ════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwfpCkdx5mp3sBkgjA1IMsNdJNl24D4tow7wwhVsAkdrjDz2uyUp7-bZhFv4OG3whFa/exec';
 
-let WK_LABELS = ['12월5주','1월1주','1월2주','1월3주','1월4주','2월1주','2월2주','2월3주','2월4주','3월1주','3월2주','3월3주','3월4주','4월1주','4월2주'];
-let WK_T26 = [10210455,60973127,54415595,48372109,42967691,48385945,61072900,102812909,92965564,129165200,80631174,74871736,79739882,79353200,79446409];
-let WK_T25 = [5563455,39269173,38582818,43479900,60306545,38047364,37825182,56300545,90795791,106679073,78806200,72544482,64488445,62765716,61770909];
-let WK_BY_NAME = {
-  '(롯)남악_O':    {s26:[0,8595455,7198909,6174273,4841636,4566273,3930000,11325818,12131000,14913000,8709727,8416091,8043909,9041818,8359818],s25:[1177636,5683909,5167455,5171182,10258727,5979727,4794909,6630909,9132727,12840909,10661273,8601091,8380091,7978909,7292818]},
-  '부천 뉴코아_O': {s26:[1088364,5058545,4351091,3046636,3677818,3574364,9353900,9602636,10386545,14100364,9052637,6876000,7623364,6719273,7095273],s25:[354364,3187727,4796364,7790545,6053909,4899000,4183364,7606455,14762818,14064545,10570364,9533273,6621182,6173273,7340591]},
-  '(신)의정부':    {s26:[0,2154455,1421273,1245455,1696364,1471091,1493364,3491636,2138545,4167091,2658636,2234818,2467545,2232455,3093909],s25:[354364,3187727,4796364,7790545,6053909,4899000,4183364,7606455,14762818,14064545,10570364,9533273,6621182,6173273,7340591]},
-  '앨리웨이':      {s26:[545909,2356364,3324818,2202273,2164727,2218273,2297818,5675182,4431636,4889818,3639818,3640000,3437636,3097909,4135455],s25:[422364,2201182,3578182,2714364,2712727,2100364,2821636,3297455,3435727,5417182,3701000,2705182,3864818,3006727,2863000]},
-  '유성 NC':       {s26:[1548000,4895364,4696000,4259545,3153364,4192727,5271091,7553182,7257545,11561273,6097273,5482636,6228091,6449545,6874909],s25:[547545,4635182,3944273,2933182,5919364,2948727,3182909,4689545,6499818,9817891,6997273,5633273,5399091,5411571,5389727]},
-  '여수':          {s26:[560636,3754818,2126273,2729091,1327455,1715000,1125727,4539455,2870727,5562455,2647545,3472636,2643091,2938364,3204273],s25:[272000,1612455,1650000,1552636,3739091,1673545,894091,2123909,2900182,3526273,2291455,2848000,1827545,2002545,2662000]},
-  '(롯)율하_O':    {s26:[0,4024727,2622000,2200364,2413727,2854000,3106455,6153273,3715909,6702182,2828000,3754455,4449909,3469636,5540636],s25:[322727,3092000,2392727,1931909,4267000,2059000,3112182,3147818,5004182,6424182,4875364,4719364,4058909,3075909,3618909]},
-  '충장':          {s26:[322818,2800273,1820727,2701091,1381636,1344182,2006182,4187545,4327455,8192091,4717636,4922000,5667455,5283091,4437364],s25:[464273,1416182,2185545,1008909,1721182,2103273,1487909,3479545,4030909,4957636,3554273,3825545,3269636,3031000,3057182]},
-  '동수원':        {s26:[580182,2720182,3113909,2468909,2133182,2311091,3376091,4635273,5331273,9063182,5236182,4256273,5096000,4551545,5736909],s25:[580182,2011000,2325455,2461000,3233273,3200455,3169818,3631636,4749091,5834455,5059273,3658182,4296091,4866000,5652636]},
-  '송파':          {s26:[223000,2057727,1865805,1739364,1501000,1689818,2199545,3449182,3555182,5232909,2762727,3568727,3528273,3395364,2434727],s25:[-31818,665818,610273,501727,1096364,446091,680818,1032091,1165091,1704182,1110909,2906455,2646273,3302000,2398182]},
-  '제주':          {s26:[411818,1759273,1156727,839273,1298909,1087364,1303182,2897182,1910818,1945909,1782727,1250000,2338727,1559545,2303182],s25:[193182,1181000,633818,1740545,1669545,579455,1194636,1438727,1378364,2263455,1225727,1619818,1071545,1716909,1429727]},
-  '괴정':          {s26:[1028727,2963455,2319727,2973545,2129636,2512000,3716636,5541273,3942818,6986455,4461091,4485636,3289455,5402818,3578273],s25:[239273,3269364,1871818,3539818,4992636,1450000,2689818,3335909,4399455,6219364,4330364,4266364,4267909,2950182,2705182]},
-  '강서 NC':       {s26:[771636,1886727,1703545,1694818,1960636,2044000,2426818,3895000,3843273,4508545,2826364,2825364,2676273,3443736,3585455],s25:[199364,1324727,1526364,1240818,1328182,1459364,1569091,2506364,3085727,4948909,3038182,2681182,2918818,3283182,2948455]},
-  '순천':          {s26:[1516364,3773727,2282182,1880545,1499364,1846000,2607364,4360818,4090818,4918364,3538636,3035182,2377636,3640636,3647636],s25:[359091,2242818,1972091,1491545,3312364,1975091,1396636,2775545,3707545,6317909,4580000,3775182,1998636,2988909,3322545]},
-  '평택':          {s26:[167818,905455,1521182,1158000,829636,1408273,1359091,1888273,1455182,2692545,1183727,1467727,2554818,1511636,1458273],s25:[108909,1032727,593364,514727,1158364,657818,751091,1059727,1845000,2424000,2094455,1630545,1832364,1476273,1794273]},
-  '고척':          {s26:[90727,1892182,1924318,1751182,2071455,2892591,3576636,5273273,6211009,7294173,3441009,2904500,3822273,4904536,3922709],s25:[0,0,0,660909,2789909,1616455,1712909,1938455,3712182,5853636,3220818,3516818,3631364,4240364,1955091]},
-  '현풍':          {s26:[223000,1437545,1249727,997545,585727,1158182,1002364,1649273,1278909,2062636,1360091,1699636,1426636,1184545,1539727],s25:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-  '원주':          {s26:[472182,2737818,2408545,2194727,1337273,1673091,2352818,4815545,3113000,2277182,3152545,2271182,3506364,3172182,2670545],s25:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-  '마리오':        {s26:[526909,2207818,2046091,1505182,1484455,2485182,2347727,5873818,3124909,3867273,3017091,2696545,3909818,4816909,3174455],s25:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-  '평촌':          {s26:[0,2068091,2898909,2719000,3227636,3594727,4230273,4331273,4621273,5286545,4632000,3277455,1865909,0,0],s25:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-  '나주':          {s26:[132364,392818,653727,737364,765182,903909,506000,1674000,1201364,1649364,1598818,1511000,1343455,1459091,1915545],s25:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-  '창원':          {s26:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s25:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-};
+const MLABELS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+let DATA=null, STORE_LIST=[], MONTHS_26=[], MONTHS_25=[];
+let T26=[], T25=[], Q26=[], Q25=[];
+let WEEKS_26=[], WEEKS_25MAP={}, DAILY=null;
 
-let STORES = [], T25 = [], T26 = [], S25 = {}, S26 = {};
-let DAILY_LABELS = [], DAILY_VALS_26 = [], DAILY_VALS_25 = [];
-let DAILY_S26 = {}, DAILY_S25 = {};
-const DAILY_STORE_NAMES = [
-  '(롯)남악_O','부천 뉴코아_O','(신)의정부','앨리웨이','유성 NC','여수',
-  '(롯)율하_O','송파','충장','동수원','제주','괴정',
-  '강서 NC','순천','평택','고척','현풍','원주',
-  '나주','마리오','평촌','창원'
-];
-
-function parseCSV(text) {
-  text = text.replace(/^﻿/, '');
-  const rows = [];
-  let row = [], cell = '', inQ = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (c === '"') {
-      if (inQ && text[i+1] === '"') { cell += '"'; i++; }
-      else inQ = !inQ;
-    } else if (c === ',' && !inQ) {
-      row.push(cell.trim()); cell = '';
-    } else if ((c === '\n' || c === '\r') && !inQ) {
-      if (c === '\r' && text[i+1] === '\n') i++;
-      row.push(cell.trim());
-      if (row.some(v => v)) rows.push(row);
-      row = []; cell = '';
-    } else {
-      cell += c;
-    }
-  }
-  if (cell || row.length) { row.push(cell.trim()); if (row.some(v=>v)) rows.push(row); }
-  return rows;
-}
-function pn(s) { const n = parseInt((s||'').replace(/[,\s]/g,'')); return isNaN(n)?0:n; }
-
-async function loadData() {
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=44834537`;
-    const res = await fetch(url);
-    const rows = parseCSV(await res.text());
-    const hdr = rows[0];
-    const allNames = hdr.slice(6).map(n => n.replace(/\s*\n\s*/g, ''));
-    let curYear = '';
-    const monthly = {};
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (row[0]) curYear = row[0];
-      if (curYear !== '25년' && curYear !== '26년') continue;
-      const mi = MONTHS.indexOf(row[2]);
-      if (mi < 0) continue;
-      if (!monthly[curYear]) monthly[curYear] = {};
-      monthly[curYear][mi] = { total: pn(row[4]), stores: row.slice(6).map(pn) };
-    }
-    T25 = MONTHS.map((_, i) => monthly['25년']?.[i]?.total || 0);
-    let last26 = -1;
-    for (let i = 0; i < 12; i++) if ((monthly['26년']?.[i]?.total||0) > 0) last26 = i;
-    T26 = [];
-    for (let i = 0; i <= last26; i++) T26.push(monthly['26년'][i]?.total || 0);
-    STORES = allNames
-      .map((name, i) => ({ id: i, name }))
-      .filter(s => {
-        if (!s.name) return false;
-        if (HIDDEN_STORES.includes(s.name)) return false;
-        const has25 = MONTHS.some((_, mi) => (monthly['25년']?.[mi]?.stores[s.id]||0) > 0);
-        const has26 = T26.some((_, mi) => (monthly['26년']?.[mi]?.stores[s.id]||0) > 0);
-        return has25 || has26;
-      });
-    S25 = {}; S26 = {};
-    STORES.forEach(s => {
-      S25[s.id] = MONTHS.map((_, mi) => monthly['25년']?.[mi]?.stores[s.id] || 0);
-      S26[s.id] = T26.map((_, mi) => monthly['26년']?.[mi]?.stores[s.id] || 0);
-    });
-    const lastM = T26.length > 0 ? MONTHS[T26.length-1] : '';
-    document.getElementById('note-total').textContent = `온라인 제외 · ${lastM}까지 집계`;
-    document.getElementById('note-store').textContent = `${lastM}까지 집계`;
-  } catch(e) {
-    console.warn('시트 로드 실패, 내장 데이터 사용:', e);
-    useFallback();
-  }
-  try {
-    const wkUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=26%20Weekly`;
-    const wkRes = await fetch(wkUrl);
-    const wkText = await wkRes.text();
-    const wkRows = parseCSV(wkText);
-    parseWeeklyData(wkRows);
-  } catch(e) {}
+// ── API ──
+function callAPI() {
+  return new Promise((resolve, reject) => {
+    const cbName = '_apicb_' + Date.now();
+    const el = document.createElement('script');
+    const tid = setTimeout(() => {
+      delete window[cbName]; el.remove();
+      reject(new Error('응답 시간 초과 (10초)\n세션 만료 또는 캐시 없음'));
+    }, 10000);
+    window[cbName] = d => {
+      clearTimeout(tid); delete window[cbName]; el.remove();
+      d.error ? reject(new Error(d.error)) : resolve(d);
+    };
+    el.src = `${SCRIPT_URL}?callback=${cbName}`;
+    el.onerror = () => { clearTimeout(tid); reject(new Error('네트워크 오류')); };
+    document.head.appendChild(el);
+  });
 }
 
-function parseWeeklyData(rows) {
-  const STORE_NAMES = [
-    '(롯)남악_O','부천 뉴코아_O','(신)의정부','앨리웨이','유성 NC','여수',
-    '(롯)율하_O','송파','충장','동수원','제주','괴정',
-    '강서 NC','순천','평택','고척','현풍','원주',
-    '나주','마리오','평촌','창원'
-  ];
-  const labels=[], t26=[], t25=[];
-  const byName={};
-  STORE_NAMES.forEach(n => { byName[n]={s26:[],s25:[]}; });
-  for (let i=0; i<rows.length; i++) {
-    const row=rows[i];
-    const wk=(row[2]||'').trim();
-    if (!/\d{1,2}월\d{1,2}주/.test(wk)) continue;
-    labels.push(wk); t26.push(pn(row[4])); t25.push(pn(row[6]));
-    STORE_NAMES.forEach((name,ni) => {
-      const base=10+ni*7;
-      byName[name].s26.push(pn(row[base+1]));
-      byName[name].s25.push(pn(row[base+3]));
-    });
-  }
-  if (labels.length===0) return;
-  WK_LABELS=labels; WK_T26=t26; WK_T25=t25; WK_BY_NAME=byName;
+function processData(d) {
+  DATA = d; STORE_LIST = d.stores || [];
+  const m25 = d.monthly.filter(m => m.year === '2025');
+  const m26 = d.monthly.filter(m => m.year === '2026');
+  MONTHS_25 = Array.from({length:12}, (_,i) =>
+    m25.find(m => m.month===i+1) || {month:i+1,total_amount:0,total_qty:0,stores:{}});
+  const last26 = m26.reduce((mx,m) => Math.max(mx,m.month), 0);
+  MONTHS_26 = Array.from({length:Math.max(last26,1)}, (_,i) =>
+    m26.find(m => m.month===i+1) || {month:i+1,total_amount:0,total_qty:0,stores:{}});
+  T26 = MONTHS_26.map(m => m.total_amount);
+  T25 = MONTHS_25.map(m => m.total_amount);
+  Q26 = MONTHS_26.map(m => m.total_qty);
+  Q25 = MONTHS_25.map(m => m.total_qty);
+  WEEKS_26 = d.weekly.filter(w => w.year==='2026');
+  WEEKS_25MAP = {};
+  d.weekly.filter(w => w.year==='2025').forEach(w => { WEEKS_25MAP[w.label]=w; });
+  DAILY = d.daily;
 }
 
-async function loadDailyData() {
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=1839494349`;
-    const res = await fetch(url);
-    const rows = parseCSV(await res.text());
+// ── 포맷 ──
+const Mcard = v => v ? `${(v/1e6).toFixed(1)}M` : '-';
+const M     = v => v ? v.toLocaleString('ko-KR') + '원' : '-';
+const QTY   = v => (v != null && v > 0) ? v.toLocaleString('ko-KR') + '개' : '-개';
+const AVG   = v => v ? v.toLocaleString('ko-KR') + '원' : '-';
+const ytdLbl = () => MONTHS_26.length > 0 ? `1~${MLABELS[MONTHS_26.length-1]}` : '';
 
-    // 헤더 행에서 "일매출"/"전년" 컬럼 인덱스 자동 감지
-    let dailyCols=[], prevCols=[];
-    for (const row of rows) {
-      if (row.some(v=>v.trim()==='일매출')) {
-        row.forEach((v,i)=>{ if(v.trim()==='일매출') dailyCols.push(i); });
-        row.forEach((v,i)=>{ if(v.trim()==='전년') prevCols.push(i); });
-        break;
-      }
-    }
-    console.log('일매출 컬럼:', dailyCols, '전년 컬럼:', prevCols);
-
-    // 매장별 임시 저장소 초기화
-    const tmpS26={}, tmpS25={};
-    DAILY_STORE_NAMES.forEach(n=>{ tmpS26[n]=[]; tmpS25[n]=[]; });
-    const labels26=[], vals26=[], vals25=[];
-
-    for (const row of rows) {
-      const cell=(row[0]||'').trim();
-      const m=cell.match(/^(\d{4})[-.\s]+(\d{1,2})[-.\s]+(\d{1,2})/);
-      if (!m || m[1]!=='2026') continue;
-      const label=`${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
-      const v26=pn(row[5]); // F열: 전체 일간합계
-      const v25=pn(row[6]); // G열: 전체 전년동일
-      if (!v26 && !v25) continue;
-      labels26.push(label); vals26.push(v26); vals25.push(v25);
-      // 매장별 일매출/전년 파싱
-      dailyCols.forEach((ci,ni)=>{ if(ni<DAILY_STORE_NAMES.length) tmpS26[DAILY_STORE_NAMES[ni]].push(pn(row[ci])); });
-      prevCols.forEach((ci,ni)=>{ if(ni<DAILY_STORE_NAMES.length) tmpS25[DAILY_STORE_NAMES[ni]].push(pn(row[ci])); });
-    }
-
-    if (labels26.length>0) {
-      DAILY_LABELS=labels26; DAILY_VALS_26=vals26; DAILY_VALS_25=vals25;
-      DAILY_S26=tmpS26; DAILY_S25=tmpS25;
-      console.log(`일별 로드 완료: ${labels26.length}일, 매장 ${dailyCols.length}개`);
-    }
-  } catch(e) {
-    console.warn('일별 데이터 로드 실패:', e);
-  }
+function pct(cur, prev) {
+  if (!prev) return '<span class="growth-flat">-</span>';
+  const g = (cur-prev)/prev*100;
+  if (g >  0.05) return `<span class="growth-up">▲${g.toFixed(1)}%</span>`;
+  if (g < -0.05) return `<span class="growth-down">▼${Math.abs(g).toFixed(1)}%</span>`;
+  return '<span class="growth-flat">±0.0%</span>';
 }
-
-function useFallback() {
-  STORES = [
-    {id:0,name:'(롯)남악_O'},{id:1,name:'부천 뉴코아_O'},{id:2,name:'(신)의정부'},
-    {id:4,name:'앨리웨이'},{id:5,name:'유성 NC'},{id:6,name:'여수'},
-    {id:7,name:'(롯)율하_O'},{id:8,name:'충장'},{id:9,name:'동수원'},
-    {id:10,name:'송파'},{id:11,name:'제주'},{id:12,name:'괴정'},
-    {id:13,name:'강서 NC'},{id:14,name:'순천'},{id:15,name:'평택'},
-    {id:16,name:'고척'},{id:17,name:'원주'},{id:18,name:'마리오'},
-    {id:19,name:'평촌'},{id:21,name:'현풍'},{id:22,name:'나주'},{id:23,name:'면세'},
-  ];
-  T25=[210140145,224692427,365309780,330275964,406435491,328590564,265400264,193785500,323134464,397688118,392444355,443761082];
-  T26=[234138841,327979900,388027455,117979883];
-  S25={
-    0:[28314273,26538273,46060909,37095909,49091064,39615727,34741091,20162727,33157545,50496909,42511091,54805636],
-    1:[23441545,31451636,44835636,49678591,54657727,47483182,31159364,23302636,43984909,41706000,55594545,45731273],
-    2:[8730091,11935818,14118455,11307182,16515727,11567182,10067545,7839636,11167909,13520091,12741636,14835091],
-    4:[12832455,11655182,17567727,16296827,20917273,15831182,15529909,11132818,14570182,18617364,18689545,22503182],
-    5:[19480545,17321000,31545007,29155182,32692545,27307909,22089364,16418545,29194545,31685636,32969182,37375727],
-    6:[9553364,7591727,11742182,11069091,15753909,11922273,9266727,6168364,9031000,12445909,7532273,17709273],
-    7:[12626636,13323182,22643727,17340182,24466091,18526727,15818909,10793182,15336273,22998127,18929727,23607818],
-    8:[7347636,11101636,17696091,18501455,18330909,16080364,11394455,8138545,15180909,22188091,20847455,19106545],
-    9:[10643818,14751000,21142364,24504000,25221355,19839091,15359364,10807545,20002909,18814909,20719000,24949000],
-    10:[3169091,3324091,10331545,13005909,14031364,10674636,9755909,8195818,13642000,11917027,13453364,14406273],
-    11:[5929636,4591182,7307455,6810818,6364182,7133091,7303000,6902636,7672727,8770000,9650909,10093818],
-    12:[14463182,11875182,20629455,21541909,24191091,17975182,14343273,10639545,15854818,22275264,23402909,24266091],
-    13:[6054455,8620545,15228818,14337636,19449545,13034182,10413364,8406364,18034364,19900182,20981545,19440727],
-    14:[10216455,9854818,18259727,15122909,20342636,14449455,9818818,8106364,11923636,18498000,16893909,21146364],
-    15:[4603727,4313636,9112818,10339000,10447818,8488182,8442636,3443636,8576091,9092273,9148636,11169545],
-    16:[3450818,8980000,19151818,12659455,18388273,14602918,11020909,9894818,14513818,19537818,19028455,19474364],
-    17:[0,0,0,0,0,0,0,6847000,12838636,18410818,19974273,19828091],
-    18:[0,0,0,0,0,0,0,0,7697727,12516909,11614000,16756182],
-    19:[0,0,0,0,0,0,0,0,0,0,0,8198818],
-    21:[0,6224155,3799036,4192000,10400455,11216273,9774818,4998727,7525545,11085364,9857727,8467273],
-    22:[3499618,4278273,8822536,6667818,0,0,0,946455,4285909,6585273,3749182,4909364],
-    23:[4214909,3028273,5709000,4931273,11793891,11088555,8903991,4509500,4841373,6626155,4154991,4980627],
-  };
-  S26={
-    0:[28481364,35041818,42867727,9032182],1:[18217455,35737445,39625001,36778546],
-    2:[7199818,9258545,12165909,3099455],4:[11380182,15319000,16315636,4790091],
-    5:[19959182,26010818,32070636,6909273],6:[11078182,10813545,15262818,3517636],
-    7:[12138818,17591364,18114000,5496455],8:[9538818,13287000,25724636,5559364],
-    9:[11878727,16977545,25004273,6467455],10:[8208805,11482000,16278909,3078818],
-    11:[5608455,7899000,7652273,2584364],12:[12128727,17102364,21504909,4308818],
-    13:[8771000,13082545,13964464,3639091],14:[11801636,13410091,15381818,3965091],
-    15:[5157091,6418818,8135364,1708273],16:[9516455,19463545,18236591,4291073],
-    17:[9549455,12383273,13077091,2893364],18:[8881636,14465545,15132364,4198455],
-    19:[12023000,17038727,13691364,0],21:[4769364,5884182,6294455,1782636],
-    22:[2856455,4617000,6546636,1928818],23:[4881218,4354000,4845855,1815900],
-  };
+function diffHtml(diff) {
+  if (!diff) return '-';
+  const cls = diff>=0 ? 'growth-up' : 'growth-down';
+  return `<span class="${cls}">${diff>0?'+':''}${M(diff)}</span>`;
 }
-
-const state={
-  main:'total',
-  total:{gran:'cumulative',disp:'table'},
-  store:{gran:'cumulative',disp:'table',id:0},
-};
-let charts={};
-
-const M=(v)=>v?`${(v/1e6).toFixed(1)}M`:'-';
-const FULL=(v)=>v?v.toLocaleString('ko-KR')+'원':'-';
-function getStore(id){ return STORES.find(s=>s.id===id)||STORES[0]; }
-function ytdLabel(){ return T26.length>0?`1~${MONTHS[T26.length-1]}`:'1~?'; }
-
-function growthHtml(cur,prev){
-  if(!prev)return'<span class="growth-flat">-</span>';
-  const g=(cur-prev)/prev*100;
-  if(g>0.05)return`<span class="growth-up">▲${g.toFixed(1)}%</span>`;
-  if(g<-0.05)return`<span class="growth-down">▼${Math.abs(g).toFixed(1)}%</span>`;
-  return'<span class="growth-flat">±0.0%</span>';
+function cv(amt, qty) {
+  if (!amt && !qty) return '<span style="color:#e2e8f0">-</span>';
+  return `<div class="cv"><span class="cv-a">${M(amt)}</span><span class="cv-q">${QTY(qty)}</span></div>`;
 }
+function sd26(name){ return MONTHS_26.map(m=>({a:m.stores[name]?.amount||0,q:m.stores[name]?.qty||0})); }
+function sd25(name){ return MONTHS_25.map(m=>({a:m.stores[name]?.amount||0,q:m.stores[name]?.qty||0})); }
 
-function toGranRows(arr,gran,idxs){
-  return idxs.map(i=>({
-    label:gran==='monthly'?MONTHS[i]:MONTHS[i]+'(일평균)',
-    val: gran==='monthly'?(arr[i]||0):Math.round((arr[i]||0)/DAYS[i]),
-    month:i
-  }));
-}
-
-function renderCards(id,a26,a25){
+// ── 카드 ──
+function renderCards(id, a26, a25, q26, q25) {
   const n=a26.length;
-  const ytd26=a26.reduce((s,v)=>s+v,0);
-  const ytd25=a25.slice(0,n).reduce((s,v)=>s+v,0);
-  const ytd25y=a25.reduce((s,v)=>s+v,0);
-  const lbl=ytdLabel();
-  const diff=ytd26-ytd25;
-  document.getElementById(id).innerHTML=`
-    <div class="card card-blue">
+  const ya26=a26.reduce((s,v)=>s+v,0);
+  const ya25=a25.slice(0,n).reduce((s,v)=>s+v,0);
+  const yq26=q26.reduce((s,v)=>s+v,0);
+  const yq25=q25.slice(0,n).reduce((s,v)=>s+v,0);
+  const lbl=ytdLbl();
+  const ap26=yq26>0?Math.round(ya26/yq26):0;
+  const ap25=yq25>0?Math.round(ya25/yq25):0;
+  document.getElementById(id).innerHTML = `
+    <div class="card card-c1">
       <div class="card-label">26년 누적 (${lbl})</div>
-      <div class="card-value">${M(ytd26)}</div>
-      <div class="card-sub">${FULL(ytd26)}</div>
+      <div class="card-value">${Mcard(ya26)}</div>
+      <div class="card-qty">${QTY(yq26)}</div>
+      <div class="card-sub">${M(ya26)}</div>
     </div>
-    <div class="card card-green">
+    <div class="card card-c2">
       <div class="card-label">25년 동기간 (${lbl})</div>
-      <div class="card-value">${M(ytd25)}</div>
-      <div class="card-sub">${FULL(ytd25)}</div>
+      <div class="card-value">${Mcard(ya25)}</div>
+      <div class="card-qty">${QTY(yq25)}</div>
+      <div class="card-sub">${M(ya25)}</div>
     </div>
-    <div class="card card-purple">
+    <div class="card card-c3">
       <div class="card-label">전년 동기 대비</div>
-      <div class="card-value">${growthHtml(ytd26,ytd25)}</div>
-      <div class="card-sub">${diff>=0?'↑':'↓'} ${M(Math.abs(diff))}</div>
+      <div class="card-value" style="font-size:32px">${pct(ya26,ya25)}</div>
+      <div class="card-sub">${ya26>=ya25?'↑':'↓'} ${M(Math.abs(ya26-ya25))}</div>
     </div>
-    <div class="card card-orange">
-      <div class="card-label">25년 연간 합계</div>
-      <div class="card-value">${M(ytd25y)}</div>
-      <div class="card-sub">${FULL(ytd25y)}</div>
+    <div class="card card-c4">
+      <div class="card-label">객단가 (26년 / 25년)</div>
+      <div class="card-value" style="font-size:22px">${AVG(ap26)}</div>
+      <div class="card-sub">25년 동기: ${AVG(ap25)}</div>
     </div>`;
 }
 
-function renderCumulativeTable(id){
-  const n=T26.length, lbl=ytdLabel();
-  let html=`<table><thead><tr>
-    <th>매장명</th><th>26년 누적 (${lbl})</th><th>25년 동기간 (${lbl})</th><th>전년비</th><th>증감액</th>
-  </tr></thead><tbody>`;
-  let tot26=0,tot25=0;
-  STORES.forEach(s=>{
-    const a25=S25[s.id]||[], a26=S26[s.id]||[];
-    const v25=a25.slice(0,n).reduce((a,b)=>a+b,0);
-    const v26=a26.reduce((a,b)=>a+b,0);
-    if(!v25&&!v26)return;
-    tot26+=v26; tot25+=v25;
-    const diff=v26-v25;
-    html+=`<tr>
-      <td>${s.name}</td><td>${M(v26)}</td><td>${M(v25)}</td>
-      <td class="td-growth">${growthHtml(v26,v25)}</td>
-      <td class="td-growth">${diff>=0?'<span class="growth-up">+':'<span class="growth-down">'}${M(Math.abs(diff))}</span></td>
-    </tr>`;
+// ── 테이블: 전체 누적 ──
+function tblCumulative(id) {
+  const n=T26.length, lbl=ytdLbl();
+  let tot26=0,tot25=0,totQ26=0,totQ25=0, rows='';
+  STORE_LIST.forEach(name => {
+    const d26=sd26(name), d25=sd25(name);
+    const v26=d26.reduce((s,d)=>s+d.a,0);
+    const v25=d25.slice(0,n).reduce((s,d)=>s+d.a,0);
+    const q26=d26.reduce((s,d)=>s+d.q,0);
+    const q25=d25.slice(0,n).reduce((s,d)=>s+d.q,0);
+    if (!v26&&!v25) return;
+    tot26+=v26; tot25+=v25; totQ26+=q26; totQ25+=q25;
+    const ap26=q26>0?Math.round(v26/q26):0;
+    const ap25=q25>0?Math.round(v25/q25):0;
+    rows+=`<tr><td>${name}</td>
+      <td>${M(v26)}</td><td>${QTY(q26)}</td><td>${AVG(ap26)}</td>
+      <td>${M(v25)}</td><td>${QTY(q25)}</td><td>${AVG(ap25)}</td>
+      <td class="td-growth">${pct(v26,v25)}</td>
+      <td class="td-growth">${diffHtml(v26-v25)}</td></tr>`;
   });
-  const diff=tot26-tot25;
-  html+=`<tr class="td-total">
-    <td>전체 합계</td><td>${M(tot26)}</td><td>${M(tot25)}</td>
-    <td class="td-growth">${growthHtml(tot26,tot25)}</td>
-    <td class="td-growth">${diff>=0?'<span class="growth-up">+':'<span class="growth-down">'}${M(Math.abs(diff))}</span></td>
-  </tr>`;
-  html+='</tbody></table>';
-  document.getElementById(id).innerHTML=html;
+  const totAp26=totQ26>0?Math.round(tot26/totQ26):0;
+  const totAp25=totQ25>0?Math.round(tot25/totQ25):0;
+  document.getElementById(id).innerHTML=`
+    <table><thead><tr>
+      <th>매장명</th>
+      <th>26년 매출 (${lbl})</th><th>판매수량</th><th>객단가</th>
+      <th>25년 매출 (${lbl})</th><th>판매수량</th><th>객단가</th>
+      <th>전년비</th><th>증감액</th>
+    </tr></thead><tbody>${rows}
+    <tr class="td-total"><td>전체 합계</td>
+      <td>${M(tot26)}</td><td>${QTY(totQ26)}</td><td>${AVG(totAp26)}</td>
+      <td>${M(tot25)}</td><td>${QTY(totQ25)}</td><td>${AVG(totAp25)}</td>
+      <td class="td-growth">${pct(tot26,tot25)}</td>
+      <td class="td-growth">${diffHtml(tot26-tot25)}</td>
+    </tr></tbody></table>`;
 }
 
-function renderPeriodTable(id,a25,a26,gran,label25,label26){
-  const idxs26=a26.map((_,i)=>i);
-  const rows26=toGranRows(a26,gran,idxs26);
-  const rows25=toGranRows(a25,gran,idxs26);
-  const lbl=ytdLabel();
-  let html=`<table><thead><tr>
-    <th>기간</th><th>${label26}</th><th>${label25}</th><th>전년비</th><th>증감액</th>
-  </tr></thead><tbody>`;
-  rows26.forEach((r,i)=>{
-    const v26=r.val, v25=rows25[i].val, diff=v26-v25;
-    const isLast=r.month===T26.length-1;
-    html+=`<tr>
-      <td>${r.label}${isLast?'<span class="partial-badge">집계중</span>':''}</td>
-      <td>${M(v26)}</td><td>${M(v25)}</td>
-      <td class="td-growth">${growthHtml(v26,v25)}</td>
-      <td class="td-growth">${diff>=0?'<span class="growth-up">+':'<span class="growth-down">'}${M(Math.abs(diff))}</span></td>
-    </tr>`;
+// ── 테이블: 월별 ──
+function tblMonthly(id, store) {
+  const n=MONTHS_26.length, lbl=ytdLbl();
+  let sum26a=0,sum25a=0,sum26q=0,sum25q=0, rows='';
+  MONTHS_26.forEach((m26,i) => {
+    const amt26=store?(m26.stores[store]?.amount||0):m26.total_amount;
+    const qty26=store?(m26.stores[store]?.qty||0):m26.total_qty;
+    const m25=MONTHS_25[i]||{};
+    const amt25=store?(m25.stores?.[store]?.amount||0):(m25.total_amount||0);
+    const qty25=store?(m25.stores?.[store]?.qty||0):(m25.total_qty||0);
+    sum26a+=amt26; sum25a+=amt25; sum26q+=qty26; sum25q+=qty25;
+    const isLast=i===n-1;
+    const ap26=qty26>0?Math.round(amt26/qty26):0;
+    const ap25=qty25>0?Math.round(amt25/qty25):0;
+    rows+=`<tr><td>${MLABELS[m26.month-1]}${isLast?'<span class="partial-badge">집계중</span>':''}</td>
+      <td>${M(amt26)}</td><td>${QTY(qty26)}</td><td>${AVG(ap26)}</td>
+      <td>${M(amt25)}</td><td>${QTY(qty25)}</td><td>${AVG(ap25)}</td>
+      <td class="td-growth">${pct(amt26,amt25)}</td>
+      <td class="td-growth">${diffHtml(amt26-amt25)}</td></tr>`;
   });
-  const ytd26=a26.reduce((s,v)=>s+v,0), ytd25s=a25.slice(0,a26.length).reduce((s,v)=>s+v,0), dytd=ytd26-ytd25s;
-  html+=`<tr class="td-total">
-    <td>누적 (${lbl})</td><td>${M(ytd26)}</td><td>${M(ytd25s)}</td>
-    <td class="td-growth">${growthHtml(ytd26,ytd25s)}</td>
-    <td class="td-growth">${dytd>=0?'<span class="growth-up">+':'<span class="growth-down">'}${M(Math.abs(dytd))}</span></td>
-  </tr>`;
-  for(let i=a26.length;i<12;i++){
-    html+=`<tr style="opacity:.45"><td>${MONTHS[i]}</td><td style="color:#334155">-</td><td>${M(a25[i])}</td><td>-</td><td>-</td></tr>`;
+  for (let i=n; i<12; i++) {
+    const amt25=store?(MONTHS_25[i]?.stores?.[store]?.amount||0):(MONTHS_25[i]?.total_amount||0);
+    const qty25=store?(MONTHS_25[i]?.stores?.[store]?.qty||0):(MONTHS_25[i]?.total_qty||0);
+    const ap25=qty25>0?Math.round(amt25/qty25):0;
+    rows+=`<tr style="opacity:.4"><td>${MLABELS[i]}</td><td style="color:#e2e8f0">-</td><td>-</td><td>-</td><td>${M(amt25)}</td><td>${QTY(qty25)}</td><td>${AVG(ap25)}</td><td>-</td><td>-</td></tr>`;
   }
-  const ytd25y=a25.reduce((s,v)=>s+v,0);
-  html+=`<tr class="td-total" style="opacity:.7"><td>25년 연간 합계</td><td>-</td><td>${M(ytd25y)}</td><td>-</td><td>-</td></tr>`;
-  html+='</tbody></table>';
-  document.getElementById(id).innerHTML=html;
+  const sumAp26=sum26q>0?Math.round(sum26a/sum26q):0;
+  const sumAp25=sum25q>0?Math.round(sum25a/sum25q):0;
+  rows+=`<tr class="td-total"><td>누적 (${lbl})</td>
+    <td>${M(sum26a)}</td><td>${QTY(sum26q)}</td><td>${AVG(sumAp26)}</td>
+    <td>${M(sum25a)}</td><td>${QTY(sum25q)}</td><td>${AVG(sumAp25)}</td>
+    <td class="td-growth">${pct(sum26a,sum25a)}</td>
+    <td class="td-growth">${diffHtml(sum26a-sum25a)}</td></tr>`;
+  document.getElementById(id).innerHTML=`
+    <table><thead><tr>
+      <th>월</th><th>26년 매출</th><th>수량</th><th>객단가</th>
+      <th>25년 매출</th><th>수량</th><th>객단가</th><th>전년비</th><th>증감액</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-function renderWeeklyTable(id,wk26,wk25,label25,label26){
-  const cur26=wk26||[], cur25=wk25||[];
-  let html=`<table><thead><tr>
-    <th>주차</th><th>${label26}</th><th>${label25}</th><th>전년비</th><th>증감액</th>
-  </tr></thead><tbody>`;
-  WK_LABELS.forEach((lbl,i)=>{
-    const v26=cur26[i]||0, v25=cur25[i]||0, diff=v26-v25;
-    const isPrev=lbl.startsWith('12');
-    html+=`<tr${isPrev?' style="opacity:.5"':''}>
-      <td>${lbl}${isPrev?'<span class="excl-badge">전년12월</span>':''}</td>
-      <td>${v26?M(v26):'-'}</td><td>${v25?M(v25):'-'}</td>
-      <td class="td-growth">${(v26&&v25)?growthHtml(v26,v25):'<span class="growth-flat">-</span>'}</td>
-      <td class="td-growth">${(v26&&v25)?(diff>=0?'<span class="growth-up">+':'<span class="growth-down">')+M(Math.abs(diff))+'</span>':'-'}</td>
-    </tr>`;
-  });
-  const sum26=cur26.slice(1).reduce((s,v)=>s+(v||0),0);
-  const sum25=cur25.slice(1).reduce((s,v,i)=>s+((cur26[i+1]||0)>0?(v||0):0),0);
-  const dsum=sum26-sum25;
-  const _wkMonths=WK_LABELS.slice(1).filter((_,i)=>(cur26[i+1]||0)>0).map(l=>l.replace(/\d+주$/,'')).filter((v,i,a)=>a.indexOf(v)===i);
-  const _sumLabel=_wkMonths.length===0?'누적 (주간합계)':_wkMonths.length===1?`${_wkMonths[0]} 누적 (주간합계)`:`1~${_wkMonths[_wkMonths.length-1]} 누적 (주간합계)`;
-  html+=`<tr class="td-total">
-    <td>${_sumLabel}</td>
-    <td>${M(sum26)||'-'}</td><td>${M(sum25)||'-'}</td>
-    <td class="td-growth">${(sum26&&sum25)?growthHtml(sum26,sum25):'<span class="growth-flat">-</span>'}</td>
-    <td class="td-growth">${(sum26&&sum25)?(dsum>=0?'<span class="growth-up">+':'<span class="growth-down">')+M(Math.abs(dsum))+'</span>':'-'}</td>
-  </tr>`;
-  html+='</tbody></table>';
-  document.getElementById(id).innerHTML=html;
-}
-
-function renderStoreCumulativeTable(id,storeId){
-  const n=T26.length, a25=S25[storeId]||[], a26=S26[storeId]||[];
-  const ytd25=a25.slice(0,n).reduce((s,v)=>s+v,0), ytd26=a26.reduce((s,v)=>s+v,0);
-  const months4=Array.from({length:Math.max(n,4)},(_,i)=>i);
-  let html=`<table><thead><tr><th>연도</th>${months4.map(i=>`<th>${MONTHS[i]}</th>`).join('')}<th>누적 합계</th></tr></thead><tbody>`;
-  html+=`<tr><td>2025년</td>${months4.map(i=>`<td>${M(a25[i]||0)}</td>`).join('')}<td><strong>${M(ytd25)}</strong></td></tr>`;
-  html+=`<tr><td>2026년</td>${a26.map((v,i)=>`<td>${M(v)}${i===n-1?'<span class="partial-badge">집계중</span>':''}</td>`).join('')}${Array(Math.max(0,4-n)).fill('<td style="color:#334155">-</td>').join('')}<td><strong>${M(ytd26)}</strong></td></tr>`;
-  html+=`<tr class="td-total"><td>전년비</td>${months4.map(i=>`<td class="td-growth">${growthHtml(a26[i]||0,a25[i]||0)}</td>`).join('')}<td class="td-growth">${growthHtml(ytd26,ytd25)}</td></tr>`;
-  html+='</tbody></table>';
-  document.getElementById(id).innerHTML=html;
-}
-
-function renderChart(canvasId,a25,a26,gran,storeName,wk26,wk25){
-  if(charts[canvasId]){charts[canvasId].destroy();delete charts[canvasId];}
-  let labels, d26, d25;
-  if(gran==='weekly'&&wk26){
-    labels=WK_LABELS;
-    d26=wk26.map(v=>+(v/1e6).toFixed(2));
-    d25=(wk25||[]).map(v=>+((v||0)/1e6).toFixed(2));
-  } else {
-    const idxs=a26.map((_,i)=>i);
-    const rows26=toGranRows(a26,gran==='cumulative'?'monthly':gran,idxs);
-    const rows25=toGranRows(a25,gran==='cumulative'?'monthly':gran,idxs);
-    labels=rows26.map(r=>r.label.replace('(일평균)',''));
-    d26=rows26.map(r=>+(r.val/1e6).toFixed(2));
-    d25=rows25.map(r=>+(r.val/1e6).toFixed(2));
+// ── 테이블: 주차별 ──
+function tblWeekly(id, store) {
+  if (!WEEKS_26.length) {
+    document.getElementById(id).innerHTML='<div style="padding:24px;color:#94a3b8;text-align:center;font-size:15px">주차별 데이터 없음</div>';
+    return;
   }
-  const dg=d26.map((v,i)=>d25[i]?+((v-d25[i])/d25[i]*100).toFixed(1):null);
-  const ctx=document.getElementById(canvasId).getContext('2d');
-  charts[canvasId]=new Chart(ctx,{
+  let sum26a=0,sum25a=0,sum26q=0,sum25q=0, rows='';
+  WEEKS_26.forEach(w26 => {
+    const w25=WEEKS_25MAP[w26.label];
+    const amt26=store?(w26.stores[store]?.amount||0):w26.total_amount;
+    const qty26=store?(w26.stores[store]?.qty||0):w26.total_qty;
+    const amt25=store?(w25?.stores[store]?.amount||0):(w25?.total_amount||0);
+    const qty25=store?(w25?.stores[store]?.qty||0):(w25?.total_qty||0);
+    sum26a+=amt26; sum25a+=amt25; sum26q+=qty26; sum25q+=qty25;
+    const ap26=qty26>0?Math.round(amt26/qty26):0;
+    const ap25=qty25>0?Math.round(amt25/qty25):0;
+    rows+=`<tr><td>${w26.label}</td>
+      <td>${M(amt26)}</td><td>${QTY(qty26)}</td><td>${AVG(ap26)}</td>
+      <td>${M(amt25)}</td><td>${QTY(qty25)}</td><td>${AVG(ap25)}</td>
+      <td class="td-growth">${pct(amt26,amt25)}</td>
+      <td class="td-growth">${(amt26&&amt25)?diffHtml(amt26-amt25):'-'}</td></tr>`;
+  });
+  const sumAp26=sum26q>0?Math.round(sum26a/sum26q):0;
+  const sumAp25=sum25q>0?Math.round(sum25a/sum25q):0;
+  rows+=`<tr class="td-total"><td>누적 합계</td>
+    <td>${M(sum26a)}</td><td>${QTY(sum26q)}</td><td>${AVG(sumAp26)}</td>
+    <td>${M(sum25a)}</td><td>${QTY(sum25q)}</td><td>${AVG(sumAp25)}</td>
+    <td class="td-growth">${pct(sum26a,sum25a)}</td>
+    <td class="td-growth">${diffHtml(sum26a-sum25a)}</td></tr>`;
+  document.getElementById(id).innerHTML=`
+    <table><thead><tr>
+      <th>주차</th><th>26년 매출</th><th>수량</th><th>객단가</th>
+      <th>25년 매출</th><th>수량</th><th>객단가</th><th>전년비</th><th>증감액</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ── 테이블: 일별 ──
+function tblDaily(id, store) {
+  if (!DAILY||!DAILY.labels.length) {
+    document.getElementById(id).innerHTML='<div style="padding:24px;color:#94a3b8;text-align:center;font-size:15px">일별 데이터 없음</div>';
+    return;
+  }
+  const len=DAILY.labels.length, START=Math.max(0,len-30);
+  let rows='';
+  for (let i=len-1; i>=START; i--) {
+    const amt=store?(DAILY.stores[store]?.amount[i]||0):DAILY.total_amount[i];
+    const qty=store?(DAILY.stores[store]?.qty[i]||0):DAILY.total_qty[i];
+    const avgP=qty>0?Math.round(amt/qty):0;
+    const pAmt=store?(DAILY.stores[store]?.amount[i-1]||0):(DAILY.total_amount[i-1]||0);
+    const dow=['일','월','화','수','목','금','토'];
+    const d=new Date('2026-'+DAILY.labels[i]);
+    const dayLabel=isNaN(d.getTime())?DAILY.labels[i]:`${DAILY.labels[i]} (${dow[d.getDay()]})`;
+    rows+=`<tr><td>${dayLabel}</td>
+      <td>${M(amt)}</td><td>${QTY(qty)}</td><td>${AVG(avgP)}</td>
+      <td class="td-growth">${i>0?pct(amt,pAmt):'<span class="growth-flat">-</span>'}</td></tr>`;
+  }
+  document.getElementById(id).innerHTML=`
+    <table><thead><tr>
+      <th>날짜</th><th>매출</th><th>수량</th><th>객단가</th><th>전일 대비</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ── 테이블: 매장별 누적 ──
+function tblStoreCumulative(id, store) {
+  const d26=sd26(store), d25=sd25(store), n=d26.length;
+  const mon=Array.from({length:Math.max(n,4)},(_,i)=>i);
+  const tot26={a:d26.reduce((s,d)=>s+d.a,0),q:d26.reduce((s,d)=>s+d.q,0)};
+  const tot25={a:d25.slice(0,n).reduce((s,d)=>s+d.a,0),q:d25.slice(0,n).reduce((s,d)=>s+d.q,0)};
+  document.getElementById(id).innerHTML=`
+    <table><thead><tr>
+      <th>연도</th>${mon.map(i=>`<th>${MLABELS[i]}</th>`).join('')}<th>누적</th>
+    </tr></thead><tbody>
+    <tr><td>2025년</td>${mon.map(i=>`<td>${cv(d25[i]?.a||0,d25[i]?.q||0)}</td>`).join('')}<td>${cv(tot25.a,tot25.q)}</td></tr>
+    <tr><td>2026년</td>${d26.map((d,i)=>`<td>${cv(d.a,d.q)}${i===n-1?'<span class="partial-badge">집계중</span>':''}</td>`).join('')}${Array(Math.max(0,4-n)).fill('<td style="color:#e2e8f0">-</td>').join('')}<td>${cv(tot26.a,tot26.q)}</td></tr>
+    <tr class="td-total"><td>전년비</td>${mon.map(i=>`<td class="td-growth">${pct(d26[i]?.a||0,d25[i]?.a||0)}</td>`).join('')}<td class="td-growth">${pct(tot26.a,tot25.a)}</td></tr>
+    </tbody></table>`;
+}
+
+// ── 차트 공통 설정 (라이트 모드) ──
+const CHART_COLORS = {
+  bar25: '#94a3b8cc', bar26: '#0ea5e9cc',
+  line25: '#94a3b8', line26: '#0ea5e9',
+  growth: '#8b5cf6',
+  gridX: '#f1f5f9', gridY: '#f1f5f980',
+  tick: '#64748b', legend: '#475569',
+  tooltip: { bg: '#1e293b', title: '#f1f5f9', body: '#cbd5e1' }
+};
+let charts={};
+function killChart(id){ if(charts[id]){charts[id].destroy();delete charts[id];} }
+
+function yAxisFmt(v){
+  const w=v*1e6;
+  return w>=1e8?(w/1e8).toFixed(1)+'억':(w/1e6).toFixed(0)+'백만';
+}
+
+// 바차트 + 전년비 라인
+function chartBarLine(cid, labels, d25, d26) {
+  killChart(cid);
+  const gr=d26.map((v,i)=>d25[i]?+((v-d25[i])/d25[i]*100).toFixed(1):null);
+  charts[cid]=new Chart(document.getElementById(cid).getContext('2d'),{
     type:'bar',
     data:{labels,datasets:[
-      {label:'2025년 (백만원)',data:d25,backgroundColor:'#94a3b8aa',borderRadius:4,order:2},
-      {label:'2026년 (백만원)',data:d26,backgroundColor:'#3b82f6cc',borderRadius:4,order:2},
-      {label:'전년비 (%)',data:dg,type:'line',borderColor:'#f472b6',backgroundColor:'#f472b615',borderWidth:2,pointRadius:5,pointBackgroundColor:'#f472b6',yAxisID:'y2',order:1,tension:.3}
+      {label:'2025년',data:d25,backgroundColor:CHART_COLORS.bar25,borderRadius:4,order:2},
+      {label:'2026년',data:d26,backgroundColor:CHART_COLORS.bar26,borderRadius:4,order:2},
+      {label:'전년비(%)',data:gr,type:'line',borderColor:CHART_COLORS.growth,
+       backgroundColor:CHART_COLORS.growth+'20',borderWidth:2,pointRadius:5,
+       pointBackgroundColor:CHART_COLORS.growth,yAxisID:'y2',order:1,tension:.3}
     ]},
     options:{responsive:true,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#64748b',font:{size:12}}},tooltip:{callbacks:{label(c){return c.dataset.yAxisID==='y2'?` 전년비: ${c.parsed.y>0?'+':''}${c.parsed.y}%`:` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}M`;}}}},
-      scales:{x:{ticks:{color:'#64748b'},grid:{color:'#f1f5f9'}},y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#e2e8f0'}},y2:{position:'right',ticks:{color:'#f472b6',callback:v=>v+'%'},grid:{drawOnChartArea:false}}}
-    }
-  });
-}
-
-function renderCumulativeChart(canvasId){
-  if(charts[canvasId]){charts[canvasId].destroy();delete charts[canvasId];}
-  const n=T26.length, labels=[],d25=[],d26=[];
-  STORES.forEach(s=>{
-    const a25=S25[s.id]||[], a26=S26[s.id]||[];
-    const v25=a25.slice(0,n).reduce((a,b)=>a+b,0), v26=a26.reduce((a,b)=>a+b,0);
-    if(!v25&&!v26)return;
-    labels.push(s.name); d25.push(+(v25/1e6).toFixed(1)); d26.push(+(v26/1e6).toFixed(1));
-  });
-  const ctx=document.getElementById(canvasId).getContext('2d');
-  charts[canvasId]=new Chart(ctx,{
-    type:'bar',
-    data:{labels,datasets:[
-      {label:'25년 동기간 (백만원)',data:d25,backgroundColor:'#94a3b8aa',borderRadius:3,order:2},
-      {label:'26년 누적 (백만원)',data:d26,backgroundColor:'#3b82f6cc',borderRadius:3,order:2},
-    ]},
-    options:{responsive:true,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#64748b',font:{size:12}}},tooltip:{callbacks:{label(c){return` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}M`;}}}},
-      scales:{x:{ticks:{color:'#64748b',maxRotation:45},grid:{color:'#f1f5f9'}},y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#e2e8f0'}}}
-    }
-  });
-}
-
-function renderStoreDailyChart(canvasId, name, d26, d25){
-  if(charts[canvasId]){charts[canvasId].destroy();delete charts[canvasId];}
-  const labels=DAILY_LABELS;
-  const data26=d26.map(v=>+(v/1e6).toFixed(2));
-  const datasets=[];
-  if(d25&&d25.some(v=>v>0)){
-    datasets.push({label:'2025년',data:d25.map(v=>+(v/1e6).toFixed(2)),borderColor:'#8b5cf6',backgroundColor:'#8b5cf610',borderWidth:1,borderDash:[4,3],pointRadius:0,pointHoverRadius:4,tension:.1,fill:false});
-  }
-  datasets.push({label:'2026년',data:data26,borderColor:'#3b82f6',backgroundColor:'#3b82f615',borderWidth:1.5,pointRadius:0,pointHoverRadius:4,tension:.1,fill:false});
-  const ctx=document.getElementById(canvasId).getContext('2d');
-  charts[canvasId]=new Chart(ctx,{
-    type:'line',
-    data:{labels,datasets},
-    options:{
-      responsive:true,
-      interaction:{mode:'index',intersect:false},
       plugins:{
-        legend:{labels:{color:'#64748b',font:{size:12}}},
-        tooltip:{callbacks:{label(c){return` ${c.dataset.label}: ${c.parsed.y.toFixed(2)}M`;}}}
-      },
+        legend:{labels:{color:CHART_COLORS.legend,font:{size:13}}},
+        tooltip:{backgroundColor:CHART_COLORS.tooltip.bg,titleColor:CHART_COLORS.tooltip.title,
+          bodyColor:CHART_COLORS.tooltip.body,
+          callbacks:{label(c){return c.dataset.yAxisID==='y2'
+            ?` 전년비: ${c.parsed.y>0?'+':''}${c.parsed.y}%`
+            :` ${c.dataset.label}: ${(c.parsed.y*1e6).toLocaleString('ko-KR')}원`;
+          }}}},
       scales:{
-        x:{ticks:{color:'#64748b',maxTicksLimit:20},grid:{color:'#e2e8f0'}},
-        y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#e2e8f0'}}
+        x:{ticks:{color:CHART_COLORS.tick,font:{size:13}},grid:{color:CHART_COLORS.gridX}},
+        y:{ticks:{color:CHART_COLORS.tick,font:{size:13},callback:yAxisFmt},grid:{color:CHART_COLORS.gridY}},
+        y2:{position:'right',ticks:{color:CHART_COLORS.growth,font:{size:13},callback:v=>v+'%'},grid:{drawOnChartArea:false}}
       }
     }
   });
 }
 
-function renderTrendChart(gran){
-  if(charts['canvas-trend']){charts['canvas-trend'].destroy();delete charts['canvas-trend'];}
-  let labels, d25, d26, title, sub;
-  if(gran==='weekly'){
-    labels=WK_LABELS;
-    d26=WK_T26.map(v=>+(v/1e6).toFixed(1));
-    d25=WK_T25.map(v=>+(v/1e6).toFixed(1));
-    title='📈 주별 매출 추이';
-    sub='25년 · 26년 비교';
-  } else if(gran==='daily'){
-    if(DAILY_LABELS.length>0){
-      labels=DAILY_LABELS;
-      d26=DAILY_VALS_26.map(v=>+(v/1e6).toFixed(2));
-      d25=DAILY_VALS_25.length>0?DAILY_VALS_25.map(v=>+(v/1e6).toFixed(2)):null;
-    } else {
-      labels=MONTHS;
-      d26=MONTHS.map((_,i)=>i<T26.length?+(T26[i]/DAYS[i]/1e6).toFixed(2):null);
-      d25=T25.map((v,i)=>+(v/DAYS[i]/1e6).toFixed(2));
-    }
-    title='📈 일자별 매출 추이';
-    sub='25년 · 26년 일간 매출 비교';
-  } else {
-    labels=MONTHS;
-    d25=T25.map(v=>+(v/1e6).toFixed(1));
-    d26=MONTHS.map((_,i)=>i<T26.length?+(T26[i]/1e6).toFixed(1):null);
-    title='📈 월별 매출 추이';
-    sub='25년 · 26년 비교';
-  }
-  document.querySelector('.trend-title').textContent=title;
-  document.querySelector('.trend-sub').textContent=sub;
-  const isDaily=gran==='daily';
-  const datasets=[];
-  if(d25&&d25.length>0){
-    datasets.push({label:'2025년',data:d25,borderColor:'#8b5cf6',backgroundColor:'#8b5cf610',borderWidth:isDaily?1:2,borderDash:[5,4],pointRadius:isDaily?0:4,pointBackgroundColor:'#8b5cf6',tension:isDaily?.1:.4,fill:false});
-  }
-  datasets.push({label:'2026년',data:d26,borderColor:'#3b82f6',backgroundColor:'#3b82f615',borderWidth:isDaily?1.5:2.5,pointRadius:isDaily?0:5,pointHoverRadius:isDaily?4:6,pointBackgroundColor:'#3b82f6',tension:isDaily?.1:.4,fill:!isDaily,spanGaps:false});
-  const ctx=document.getElementById('canvas-trend').getContext('2d');
-  charts['canvas-trend']=new Chart(ctx,{
+// 누적 라인 차트 (월별 추이)
+function chartCumulativeLine(cid, store) {
+  killChart(cid);
+  const d25=MLABELS.map((_,i)=>+((store?(MONTHS_25[i]?.stores[store]?.amount||0):(MONTHS_25[i]?.total_amount||0))/1e6).toFixed(2));
+  const d26=MLABELS.map((_,i)=>i<MONTHS_26.length?+((store?(MONTHS_26[i]?.stores[store]?.amount||0):(MONTHS_26[i]?.total_amount||0))/1e6).toFixed(2):null);
+  charts[cid]=new Chart(document.getElementById(cid).getContext('2d'),{
     type:'line',
-    data:{labels,datasets},
-    options:{
-      responsive:true,
-      interaction:{mode:'index',intersect:false},
+    data:{labels:MLABELS,datasets:[
+      {label:'2025년',data:d25,borderColor:CHART_COLORS.line25,borderDash:[6,3],
+       borderWidth:2,pointRadius:4,pointBackgroundColor:CHART_COLORS.line25,
+       backgroundColor:'transparent',tension:.3,order:2},
+      {label:'2026년',data:d26,borderColor:CHART_COLORS.line26,borderWidth:2.5,
+       pointRadius:5,pointBackgroundColor:CHART_COLORS.line26,
+       backgroundColor:CHART_COLORS.line26+'18',fill:true,tension:.3,order:1}
+    ]},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},
       plugins:{
-        legend:{labels:{color:'#64748b',font:{size:12}}},
-        tooltip:{callbacks:{label(c){return c.parsed.y!==null?` ${c.dataset.label}: ${c.parsed.y.toFixed(2)}M`:null;}}}
-      },
+        legend:{labels:{color:CHART_COLORS.legend,font:{size:13}}},
+        tooltip:{backgroundColor:CHART_COLORS.tooltip.bg,titleColor:CHART_COLORS.tooltip.title,
+          bodyColor:CHART_COLORS.tooltip.body,
+          callbacks:{label(c){return ` ${c.dataset.label}: ${(c.parsed.y*1e6).toLocaleString('ko-KR')}원`;}}}},
       scales:{
-        x:{ticks:{color:'#64748b'},grid:{color:'#e2e8f0'}},
-        y:{ticks:{color:'#64748b',callback:v=>v+'M'},grid:{color:'#e2e8f0'}}
+        x:{ticks:{color:CHART_COLORS.tick,font:{size:13}},grid:{color:CHART_COLORS.gridX}},
+        y:{ticks:{color:CHART_COLORS.tick,font:{size:13},callback:yAxisFmt},grid:{color:CHART_COLORS.gridY}}
       }
     }
   });
 }
 
-function renderTotal(){
-  const{gran,disp}=state.total;
-  renderCards('cards-total',T26,T25);
-  renderTrendChart(gran);
-  const showTable=disp==='table';
-  document.getElementById('table-total').classList.toggle('hidden',!showTable);
-  document.getElementById('chart-total').classList.toggle('hidden',showTable);
-  if(gran==='cumulative'){
-    if(showTable) renderCumulativeTable('table-total'); else renderCumulativeChart('canvas-total');
-  } else if(gran==='weekly'){
-    if(showTable) renderWeeklyTable('table-total',WK_T26,WK_T25,'25년','26년');
-    else          renderChart('canvas-total',T25,T26,gran,null,WK_T26,WK_T25);
+// 매장별 누적 바차트
+function chartCumulative(cid) {
+  killChart(cid);
+  const n=T26.length, labels=[], d25=[], d26=[];
+  STORE_LIST.forEach(name=>{
+    const v26=sd26(name).reduce((s,d)=>s+d.a,0);
+    const v25=sd25(name).slice(0,n).reduce((s,d)=>s+d.a,0);
+    if(!v26&&!v25) return;
+    labels.push(name);
+    d25.push(+(v25/1e6).toFixed(1));
+    d26.push(+(v26/1e6).toFixed(1));
+  });
+  charts[cid]=new Chart(document.getElementById(cid).getContext('2d'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'25년 동기간',data:d25,backgroundColor:CHART_COLORS.bar25,borderRadius:3},
+      {label:'26년 누적',data:d26,backgroundColor:CHART_COLORS.bar26,borderRadius:3}
+    ]},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{color:CHART_COLORS.legend,font:{size:13}}},
+        tooltip:{backgroundColor:CHART_COLORS.tooltip.bg,titleColor:CHART_COLORS.tooltip.title,
+          bodyColor:CHART_COLORS.tooltip.body,
+          callbacks:{label(c){return ` ${c.dataset.label}: ${(c.parsed.y*1e6).toLocaleString('ko-KR')}원`;}}}},
+      scales:{
+        x:{ticks:{color:CHART_COLORS.tick,maxRotation:45,font:{size:12}},grid:{color:CHART_COLORS.gridX}},
+        y:{ticks:{color:CHART_COLORS.tick,font:{size:13},callback:yAxisFmt},grid:{color:CHART_COLORS.gridY}}
+      }
+    }
+  });
+}
+
+function chartMonthly(cid, store) {
+  const labels=MONTHS_26.map(m=>MLABELS[m.month-1]);
+  const d26=MONTHS_26.map(m=>+((store?(m.stores[store]?.amount||0):m.total_amount)/1e6).toFixed(2));
+  const d25=MONTHS_26.map((_,i)=>+((store?(MONTHS_25[i]?.stores[store]?.amount||0):(MONTHS_25[i]?.total_amount||0))/1e6).toFixed(2));
+  chartBarLine(cid,labels,d25,d26);
+}
+function chartWeekly(cid, store) {
+  if (!WEEKS_26.length) return;
+  const labels=WEEKS_26.map(w=>w.label);
+  const d26=WEEKS_26.map(w=>+((store?(w.stores[store]?.amount||0):w.total_amount)/1e6).toFixed(2));
+  const d25=WEEKS_26.map(w=>{const w5=WEEKS_25MAP[w.label];return+((store?(w5?.stores[store]?.amount||0):(w5?.total_amount||0))/1e6).toFixed(2);});
+  chartBarLine(cid,labels,d25,d26);
+}
+function chartDaily(cid, store) {
+  if (!DAILY||!DAILY.labels.length) return;
+  killChart(cid);
+  const amts=store?DAILY.stores[store]?.amount:DAILY.total_amount;
+  const qtys=store?DAILY.stores[store]?.qty:DAILY.total_qty;
+  if (!amts) return;
+  charts[cid]=new Chart(document.getElementById(cid).getContext('2d'),{
+    type:'line',
+    data:{labels:DAILY.labels,datasets:[
+      {label:'매출',data:amts.map(v=>+(v/1e6).toFixed(2)),borderColor:CHART_COLORS.line26,
+       backgroundColor:CHART_COLORS.line26+'18',borderWidth:2,pointRadius:2,fill:true,tension:.3,order:1},
+      {label:'수량(개)',data:qtys,type:'bar',backgroundColor:'#8b5cf640',borderRadius:2,yAxisID:'y2',order:2}
+    ]},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{color:CHART_COLORS.legend,font:{size:13}}},
+        tooltip:{backgroundColor:CHART_COLORS.tooltip.bg,titleColor:CHART_COLORS.tooltip.title,
+          bodyColor:CHART_COLORS.tooltip.body,
+          callbacks:{label(c){return c.dataset.yAxisID==='y2'?` 수량: ${c.parsed.y?.toLocaleString()}개`:` 매출: ${(c.parsed.y*1e6).toLocaleString('ko-KR')}원`;}}}},
+      scales:{
+        x:{ticks:{color:CHART_COLORS.tick,maxRotation:45,maxTicksLimit:15,font:{size:12}},grid:{color:CHART_COLORS.gridX}},
+        y:{ticks:{color:CHART_COLORS.tick,font:{size:13},callback:yAxisFmt},grid:{color:CHART_COLORS.gridY}},
+        y2:{position:'right',ticks:{color:'#8b5cf6',font:{size:13},callback:v=>v},grid:{drawOnChartArea:false}}
+      }
+    }
+  });
+}
+
+// ── 렌더 (차트 + 테이블 항상 동시 표시) ──
+function renderTotal() {
+  const {gran}=state.total;
+  renderCards('cards-total',T26,T25,Q26,Q25);
+  const t=document.getElementById('chart-total-title');
+  if (gran==='cumulative'){
+    t.textContent='월별 매출 추이 · 25·26년 비교';
+    chartCumulativeLine('canvas-total',null);
+    tblCumulative('table-total');
+  } else if (gran==='monthly'){
+    t.textContent='월별 매출 · 25·26년 바차트';
+    chartMonthly('canvas-total',null);
+    tblMonthly('table-total',null);
+  } else if (gran==='weekly'){
+    t.textContent='주차별 매출 · 25·26년 바차트';
+    chartWeekly('canvas-total',null);
+    tblWeekly('table-total',null);
   } else {
-    if(showTable) renderPeriodTable('table-total',T25,T26,gran,'25년','26년');
-    else          renderChart('canvas-total',T25,T26,gran);
+    t.textContent='일별 매출 추이 (2026년)';
+    chartDaily('canvas-total',null);
+    tblDaily('table-total',null);
   }
 }
 
-function renderStore(){
-  const{gran,disp,id}=state.store;
-  const a25=S25[id]||[], a26=S26[id]||[];
-  renderCards('cards-store',a26,a25);
-  const showTable=disp==='table';
-  document.getElementById('table-store').classList.toggle('hidden',!showTable);
-  document.getElementById('chart-store').classList.toggle('hidden',showTable);
-  const s=getStore(id);
-  const wkd=WK_BY_NAME[s.name]||null;
-  if(gran==='cumulative'){
-    if(showTable) renderStoreCumulativeTable('table-store',id); else renderChart('canvas-store',a25,a26,'monthly',s.name);
-  } else if(gran==='weekly'){
-    if(wkd){
-      if(showTable) renderWeeklyTable('table-store',wkd.s26,wkd.s25,'25년 '+s.name,'26년 '+s.name);
-      else          renderChart('canvas-store',a25,a26,gran,s.name,wkd.s26,wkd.s25);
-    } else {
-      document.getElementById('table-store').innerHTML='<div style="padding:20px;color:#64748b">주차별 데이터 없음</div>';
-    }
+function renderStore() {
+  const {gran,name}=state.store;
+  const d26=sd26(name), d25=sd25(name);
+  renderCards('cards-store',d26.map(d=>d.a),d25.map(d=>d.a),d26.map(d=>d.q),d25.map(d=>d.q));
+  const t=document.getElementById('chart-store-title');
+  if (gran==='cumulative'){
+    t.textContent='월별 매출 추이 · 25·26년 비교';
+    chartCumulativeLine('canvas-store',name);
+    tblStoreCumulative('table-store',name);
+  } else if (gran==='monthly'){
+    t.textContent='월별 매출 · 25·26년 바차트';
+    chartMonthly('canvas-store',name);
+    tblMonthly('table-store',name);
+  } else if (gran==='weekly'){
+    t.textContent='주차별 매출 · 25·26년 바차트';
+    chartWeekly('canvas-store',name);
+    tblWeekly('table-store',name);
   } else {
-    const dS26=DAILY_S26[s.name]||[], dS25=DAILY_S25[s.name]||[];
-    if(showTable){
-      renderPeriodTable('table-store',a25,a26,gran,'25년 '+s.name,'26년 '+s.name);
-    } else if(gran==='daily'&&dS26.length>0){
-      renderStoreDailyChart('canvas-store',s.name,dS26,dS25);
-    } else {
-      renderChart('canvas-store',a25,a26,gran,s.name);
-    }
+    t.textContent='일별 매출 추이 (2026년)';
+    chartDaily('canvas-store',name);
+    tblDaily('table-store',name);
   }
 }
 
-function switchMain(tab){
+// ── 상태 & 컨트롤 ──
+const state={main:'total',total:{gran:'cumulative'},store:{gran:'cumulative',name:''}};
+
+function switchMain(tab) {
   state.main=tab;
-  document.getElementById('nav-total').classList.toggle('active', tab==='total');
-  document.getElementById('nav-store').classList.toggle('active', tab==='store');
-  document.getElementById('sec-total').classList.toggle('active', tab==='total');
-  document.getElementById('sec-store').classList.toggle('active', tab==='store');
-  if(tab==='total') renderTotal(); else renderStore();
+  document.getElementById('nav-total').classList.toggle('active',tab==='total');
+  document.getElementById('nav-store').classList.toggle('active',tab==='store');
+  document.getElementById('sec-total').classList.toggle('active',tab==='total');
+  document.getElementById('sec-store').classList.toggle('active',tab==='store');
+  if (tab==='total') renderTotal(); else renderStore();
 }
-
-function setGran(sec,val){
+function setGran(sec, val) {
   state[sec].gran=val;
-  const btns=document.getElementById('gran-'+sec).querySelectorAll('button');
-  ['cumulative','monthly','weekly','daily'].forEach((v,i)=>btns[i].classList.toggle('active',v===val));
-  if(sec==='total')renderTotal();else renderStore();
+  document.getElementById('gran-'+sec).querySelectorAll('button').forEach((b,i) =>
+    b.classList.toggle('active',['cumulative','monthly','weekly','daily'][i]===val));
+  if (sec==='total') renderTotal(); else renderStore();
 }
-
-function setDisp(sec,val){
-  state[sec].disp=val;
-  document.getElementById('disp-'+sec).querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active',['table','chart'][i]===val));
-  if(sec==='total')renderTotal();else renderStore();
-}
-
-function onStoreChange(){
-  state.store.id=+document.getElementById('store-select').value;
+function onStoreChange() {
+  state.store.name=document.getElementById('store-select').value;
   renderStore();
 }
 
-(async function init(){
-  await Promise.all([loadData(), loadDailyData()]);
-  document.getElementById('loading').style.display='none';
-  const sel=document.getElementById('store-select');
-  STORES.forEach(s=>{
-    const o=document.createElement('option');
-    o.value=s.id; o.textContent=s.name;
-    sel.appendChild(o);
-  });
-  state.store.id=STORES[0]?.id||0;
-  renderTotal();
+// ── 초기화 ──
+(async function init() {
+  try {
+    const data=await callAPI();
+    processData(data);
+    document.getElementById('updated-at').textContent=data.updatedAt?'⏱ '+data.updatedAt:'';
+    const lastM=MONTHS_26.length>0?MLABELS[MONTHS_26.length-1]:'';
+    document.getElementById('note-total').textContent=`온라인 제외 · ${lastM}까지 집계`;
+    document.getElementById('note-store').textContent=`${lastM}까지 집계`;
+    const sel=document.getElementById('store-select');
+    STORE_LIST.forEach(name=>{
+      const o=document.createElement('option');
+      o.value=name; o.textContent=name; sel.appendChild(o);
+    });
+    state.store.name=STORE_LIST[0]||'';
+    document.getElementById('loading').style.display='none';
+    renderTotal();
+  } catch(e) {
+    document.getElementById('loading-spinner').style.display='none';
+    document.getElementById('loading-msg').innerHTML=
+      `<span style="font-size:36px">⚠️</span>\n<strong style="color:#dc2626">데이터 로드 실패</strong>\n${e.message}`;
+    console.error(e);
+  }
 })();
 </script>
 </body>
