@@ -14,13 +14,20 @@ body{font-family:'Malgun Gothic','Segoe UI',sans-serif;background:#f0f4f8;color:
 .brand{padding:24px 18px 18px;border-bottom:1px solid #1e293b}
 .brand-name{font-size:17px;font-weight:700;color:#f1f5f9}
 .brand-sub{font-size:13px;color:#64748b;margin-top:3px}
-.sidenav{padding:12px 10px;flex:1}
-.nav-section-label{font-size:11px;font-weight:700;color:#475569;letter-spacing:.8px;text-transform:uppercase;padding:8px 14px 4px}
-.nav-divider{height:1px;background:#1e293b;margin:10px 0}
-.nav-item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:8px;border:none;cursor:pointer;font-size:16px;font-weight:500;color:#94a3b8;background:transparent;font-family:inherit;text-align:left;transition:all .15s;margin-bottom:4px}
-.nav-item:hover:not(.active){background:#1e293b;color:#e2e8f0}
-.nav-item.active{background:#0ea5e915;color:#38bdf8;font-weight:700}
-.nav-icon{font-size:17px;width:20px;text-align:center}
+.sidenav{padding:10px 10px;flex:1}
+.nav-group{margin-bottom:6px}
+.nav-group-hd{display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;border-radius:8px;border:none;cursor:pointer;font-size:18px;font-weight:700;color:#94a3b8;background:transparent;font-family:inherit;text-align:left;transition:all .15s}
+.nav-group-hd:hover{background:#1e293b;color:#e2e8f0}
+.nav-group-hd.active{color:#e2e8f0}
+.nav-icon{font-size:18px;width:22px;text-align:center;flex-shrink:0}
+.nav-chevron{margin-left:auto;font-size:12px;transition:transform .25s;display:inline-block;opacity:.6}
+.nav-group-hd:not(.open) .nav-chevron{transform:rotate(-90deg)}
+.nav-sub{overflow:hidden;max-height:200px;transition:max-height .3s ease}
+.nav-sub.collapsed{max-height:0}
+.nav-sub-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px 9px 38px;border-radius:7px;border:none;cursor:pointer;font-size:15px;font-weight:500;color:#64748b;background:transparent;font-family:inherit;text-align:left;transition:all .15s;margin-bottom:2px}
+.nav-sub-item:hover:not(.active){background:#1e293b;color:#e2e8f0}
+.nav-sub-item.active{background:#0ea5e920;color:#38bdf8;font-weight:700}
+.nav-sub-dot{font-size:8px;opacity:.45;flex-shrink:0}
 .sidebar-footer{padding:14px 18px;border-top:1px solid #1e293b}
 .sidebar-footer p{font-size:13px;color:#475569;line-height:2}
 
@@ -145,17 +152,38 @@ tr:hover td{background:#f8fafc}
     <div class="brand-sub">통합 대시보드</div>
   </div>
   <nav class="sidenav">
-    <div class="nav-section-label">매출 현황</div>
-    <button class="nav-item active" id="nav-total" onclick="switchMain('total')">
-      <span class="nav-icon">🏪</span> 전체 매장
-    </button>
-    <button class="nav-item" id="nav-store" onclick="switchMain('store')">
-      <span class="nav-icon">📊</span> 매장별
-    </button>
-    <div class="nav-divider"></div>
-    <button class="nav-item" id="nav-best" onclick="switchMain('best')">
-      <span class="nav-icon">🏆</span> 판매 베스트
-    </button>
+    <!-- 매출 현황 그룹 -->
+    <div class="nav-group">
+      <button class="nav-group-hd open active" id="grp-sales" onclick="toggleGroup('grp-sales','sub-sales')">
+        <span class="nav-icon">📈</span>
+        <span>매출 현황</span>
+        <span class="nav-chevron">▾</span>
+      </button>
+      <div class="nav-sub" id="sub-sales">
+        <button class="nav-sub-item active" id="nav-total" onclick="switchMain('total')">
+          <span class="nav-sub-dot">●</span> 전체 매장
+        </button>
+        <button class="nav-sub-item" id="nav-store" onclick="switchMain('store')">
+          <span class="nav-sub-dot">●</span> 매장별
+        </button>
+      </div>
+    </div>
+    <!-- 판매 베스트 그룹 -->
+    <div class="nav-group">
+      <button class="nav-group-hd open" id="grp-best" onclick="toggleGroup('grp-best','sub-best')">
+        <span class="nav-icon">🏆</span>
+        <span>판매 베스트</span>
+        <span class="nav-chevron">▾</span>
+      </button>
+      <div class="nav-sub" id="sub-best">
+        <button class="nav-sub-item" id="nav-best-overall" onclick="switchMain('best','overall')">
+          <span class="nav-sub-dot">●</span> 전체 매장
+        </button>
+        <button class="nav-sub-item" id="nav-best-store" onclick="switchMain('best','store')">
+          <span class="nav-sub-dot">●</span> 매장별
+        </button>
+      </div>
+    </div>
   </nav>
   <div class="sidebar-footer">
     <p>온라인 매출 제외</p>
@@ -244,11 +272,6 @@ tr:hover td{background:#f8fafc}
         </div>
         <button id="best-refresh" class="refresh-btn" onclick="bestRefresh()" title="새로고침">🔄</button>
       </div>
-    </div>
-    <!-- 탭 -->
-    <div class="best-tabs-row">
-      <button class="best-tab-btn active" id="tab-overall" onclick="bestSwitchTab('overall')">전체 매장</button>
-      <button class="best-tab-btn" id="tab-store" onclick="bestSwitchTab('store')">매장별</button>
     </div>
     <!-- 매장 선택 알약 -->
     <div class="store-picker" id="store-picker"></div>
@@ -705,15 +728,38 @@ function renderStore() {
 // ── 상태 & 컨트롤 ──
 const state={main:'total',total:{gran:'cumulative'},store:{gran:'cumulative',name:''}};
 
-function switchMain(tab) {
-  state.main=tab;
-  ['total','store','best'].forEach(k => {
-    document.getElementById('nav-'+k).classList.toggle('active', k===tab);
-    document.getElementById('sec-'+k).classList.toggle('active', k===tab);
-  });
+function toggleGroup(grpId, subId) {
+  const hd  = document.getElementById(grpId);
+  const sub = document.getElementById(subId);
+  const closing = !sub.classList.contains('collapsed');
+  sub.classList.toggle('collapsed', closing);
+  hd.classList.toggle('open', !closing);
+}
+
+function switchMain(tab, subTab) {
+  state.main = tab;
+
+  // 섹션 표시
+  ['total','store','best'].forEach(k =>
+    document.getElementById('sec-'+k).classList.toggle('active', k===tab));
+
+  // 서브아이템 활성화
+  const isBest = tab === 'best';
+  const bTab   = subTab || bestState.tab || 'overall';
+  document.getElementById('nav-total').classList.toggle('active', tab==='total');
+  document.getElementById('nav-store').classList.toggle('active', tab==='store');
+  document.getElementById('nav-best-overall').classList.toggle('active', isBest && bTab==='overall');
+  document.getElementById('nav-best-store').classList.toggle('active', isBest && bTab==='store');
+
+  // 그룹 헤더 활성화
+  document.getElementById('grp-sales').classList.toggle('active', tab==='total'||tab==='store');
+  document.getElementById('grp-best').classList.toggle('active', isBest);
+
   if (tab==='total') renderTotal();
   else if (tab==='store') renderStore();
   else if (tab==='best') {
+    if (subTab) bestState.tab = subTab;
+    document.getElementById('store-picker').style.display = bestState.tab==='store' ? 'flex' : 'none';
     if (!bestState.startDate) bestSetPeriod('yesterday');
     else bestLoadData();
   }
@@ -795,14 +841,6 @@ function bestOnDateChange() {
     document.getElementById('btn-'+t).classList.remove('active'));
   bestState.cacheOverall={}; bestState.cacheStores={};
   if (bestState.startDate && bestState.endDate) bestLoadData();
-}
-
-function bestSwitchTab(tab) {
-  bestState.tab=tab;
-  document.getElementById('tab-overall').classList.toggle('active', tab==='overall');
-  document.getElementById('tab-store').classList.toggle('active', tab==='store');
-  document.getElementById('store-picker').style.display = tab==='store' ? 'flex' : 'none';
-  bestLoadData();
 }
 
 function bestSwitchStore(name) {
